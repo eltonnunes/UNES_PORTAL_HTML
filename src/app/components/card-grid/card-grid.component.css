@@ -1,0 +1,27 @@
+.card{
+  width: 255px !important;
+  float: left;
+  margin: 8px;
+}
+
+.fade {
+  position: relative;
+  opacity: 10 !important;
+  height: 7.5em;
+  overflow: hidden;
+}
+.fade:after {
+  content: "";
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 70%;
+  height: 1.2em;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
+}
+
+.card-block {
+    padding: 1.25rem;
+    height: 260px;
+}

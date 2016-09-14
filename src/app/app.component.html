@@ -1,0 +1,13 @@
+<h1>
+  {{title}}
+</h1>
+<loading [visible]="load" text="Carregando"></loading>
+
+<tableGrid
+[columns]="cols"
+[rows]="rows"
+[order]="order"
+[pagination]="pagination">
+</tableGrid>
+
+<cardGrid></cardGrid>

@@ -1,0 +1,23 @@
+.table-sortable > thead > tr > th {
+    cursor: pointer;
+    position: relative;
+    background-image: none;
+    /*display: table-cell !important;*/
+}
+
+.table-sortable > thead > tr > th:after,
+.table-sortable > thead > tr > th.sort-false:after,
+.table-sortable > thead > tr > th.sort-true:after {
+    font-family: FontAwesome;
+    padding-left: 5px;
+}
+
+.table-sortable > thead > tr > th:after {
+    color: #ddd;
+}
+.table-sortable > thead > tr > th.sort-false:after {
+    color: #767676;
+}
+.table-sortable > thead > tr > th.sort-true:after {
+    color: #767676;
+}

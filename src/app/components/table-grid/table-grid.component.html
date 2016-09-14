@@ -1,0 +1,34 @@
+<table class="table table-hover">
+
+  <thead class="thead">
+    <tr>
+      <th (click)="changeSorting(col.key)"
+      *ngFor="let col of columns | keys" id="col.key">
+        <i [class]="selectedClass(col.key)" aria-hidden="true"></i>
+        {{ col.value }} </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let item of rows">
+      <td *ngFor="let row of item | keys " id="row.key"> {{ row.value }} </td>
+    </tr>
+  </tbody>
+
+  <tfoot class="tfoot">
+    <tr>
+      <th>
+        <pagination
+        [current] = "pagination.current"
+        [totalRecords] = "pagination.totalRecords"
+        [recordPerPage] = "pagination.recordPerPage"
+        [previous] = "pagination.previous"
+        [next] = "pagination.next"
+        [pagination] = "pagination.pagination"
+        [totalRows] = "rows.length"
+        ></pagination>
+      </th>
+    </tr>
+  </tfoot>
+
+</table>
