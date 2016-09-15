@@ -8,6 +8,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { TableGridComponent } from './components/table-grid/table-grid.component';
 import { CardGridComponent } from './components/card-grid/card-grid.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
+import { MediaGridComponent } from './components/media-grid/media-grid.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { PaginationComponent } from './components/pagination/pagination.componen
     LoadingComponent,
     TableGridComponent,
     CardGridComponent,
-    PaginationComponent
+    PaginationComponent,
+    MediaGridComponent
   ],
   imports: [
     BrowserModule,

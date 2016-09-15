@@ -1,0 +1,20 @@
+<div class="media" *ngFor="let card of rows">
+  <a class="media-left" href="#">
+    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" [src]="card.img" data-holder-rendered="true">
+  </a>
+  <div class="media-body">
+    <span class="tag tag-success">{{card.tag}}</span>
+    <h4 class="media-heading">{{card.title}}</h4>
+    {{card.text}}
+  </div>
+</div>
+
+<pagination
+[current] = "pagination.current"
+[totalRecords] = "pagination.totalRecords"
+[recordPerPage] = "pagination.recordPerPage"
+[previous] = "pagination.previous"
+[next] = "pagination.next"
+[pagination] = "pagination.pagination"
+[totalRows] = "rows.length"
+></pagination>
