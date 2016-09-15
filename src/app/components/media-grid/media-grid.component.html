@@ -1,11 +1,11 @@
-<div class="media" *ngFor="let card of rows">
+<div class="media" *ngFor="let media of rows">
   <a class="media-left" href="#">
-    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" [src]="card.img" data-holder-rendered="true">
+    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" [src]="media.img" data-holder-rendered="true">
   </a>
   <div class="media-body">
-    <span class="tag tag-success">{{card.tag}}</span>
-    <h4 class="media-heading">{{card.title}}</h4>
-    {{card.text}}
+    <span class="tag tag-success">{{media.tag}}</span>
+    <h4 class="media-heading">{{media.title}}</h4>
+    {{media.text}}
   </div>
 </div>
 

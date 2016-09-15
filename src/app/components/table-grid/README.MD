@@ -1,11 +1,12 @@
-## Compenente Table Grid
+## Component Table Grid
 
-O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui valores default, dados, paginação e filtros.
+O component `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui valores default, dados, paginação e filtros.
  Para alterar os dados default utilize os atributos.
 
 ### Seletor a ser Utilizado:
->     <tableGrid></tableGrid>
-
+```html
+<tableGrid></tableGrid>
+```
 
 
 
@@ -13,8 +14,8 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
 
 - `columns`: O atributo `columns` é do tipo `Object` e deve conter os keys e values a serem exibidos no header do `tableGrid`.
 ###### Exemplo de utilização,
-  >     // Colunas
-  >      cols = {
+```javascript
+        cols = {
                       "id"          : "Id",
                       "first_name"  : "First Name",
                       "last_name"   : "Last Name",
@@ -22,13 +23,13 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
                       "gender"      : "Gender",
                       "ip_address"  : "Ip Address"
                     };
-
+```
 
 
 - `rows`: O atributo `rows` é do tipo `Array[Object]` e deve conter as linhas a serem exibidas, os keys do header devem ser utilizados como key dos objects contidos no array `tableGrid`.
 ###### Exemplo de utilização
->     // Registros
->     rows =
+```javascript
+     rows =
             [{
                 "id": 1,
                 "first_name": "Judith",
@@ -37,7 +38,7 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
                 "gender": "Female",
                 "ip_address": "254.206.27.218"
               }];
-
+```
 
 
 - `order`: O atributo `order` é do tipo `Object` e deve conter os keys `[col, asc]` com seus respectivos values.
@@ -45,9 +46,9 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
   * O key `col` é do tipo `string`e deve conter a coluna a ser ordenada, e deve esta na coleção definida no object `columns`.
   * O key `asc` é do tipo `boolean` e deve conter `true \ false`.
 ###### Exemplo de utilização
->     // Ordenação
->      order = { col : 'id' , asc : false };
-
+```javascript
+      order = { col : 'id' , asc : false };
+```
 
 
 - `pagination`: O atributo `pagination` é do tipo `Object` e deve conter os keys `[current, totalRecords, recordPerPage, previous, next]` com seus respectivos values.
@@ -57,33 +58,37 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
   * `previous` é do tipo `boolean` e deve conter `true / false`, possibilita a exibição ou não do botão voltar no `tableGrid`.
   * `next` é do tipo `boolean` e deve conter `true / false`, possibilita a exibição ou não do botão avançar no `tableGrid`.
 ###### Exemplo de utilização
->     // Paginação
->      pagination = {
+```javascript
+      pagination = {
                           current       : 4,
                           totalRecords  : 50,
                           recordPerPage : 4,
                           previous      : true,
                           next          : false
                         };
-
+```
 
 
 
 
 #### Exemplo de utilização
+```html
+<tableGrid
+  [columns]="cols"
+  [rows]="rows"
+  [order]="order"
+  [pagination]="pagination">
+</tableGrid>`
+```
 
->     <tableGrid
-      [columns]="cols"
-      [rows]="rows"
-      [order]="order"
-      [pagination]="pagination">
-      </tableGrid>`
 
->     // Ordenação
->      order = { col : 'id' , asc : false };
+```javascript
+      // Ordenação
+      order = { col : 'id' , asc : false };
 
->     // Colunas
->      cols = {
+
+     // Colunas
+      cols = {
                     "id"          : "Id",
                     "first_name"  : "First Name",
                     "last_name"   : "Last Name",
@@ -92,8 +97,8 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
                     "ip_address"  : "Ip Address"
                   };
 
->     // Paginação
->      pagination = {
+     // Paginação
+      pagination = {
                           current       : 4,
                           totalRecords  : 50,
                           recordPerPage : 4,
@@ -101,9 +106,8 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
                           next          : false
                         };
 
->     // Registros
->     rows =
-            [{
+     // Registros
+     rows = [{
                 "id": 1,
                 "first_name": "Judith",
                 "last_name": "Burns",
@@ -174,7 +178,7 @@ O componente `tableGrid` utiliza o seletor `<tableGrid> </tableGrid>` que possui
                 "gender": "Female",
                 "ip_address": "143.31.4.52"
               }];
-
+```
 
 
 ### Referências Utilizadas para o Componente
