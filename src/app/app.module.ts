@@ -9,6 +9,7 @@ import { TableGridComponent } from './components/table-grid/table-grid.component
 import { CardGridComponent } from './components/card-grid/card-grid.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { MediaGridComponent } from './components/media-grid/media-grid.component';
+import { KeysPipe } from './pipes/keys.pipe';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { MediaGridComponent } from './components/media-grid/media-grid.component
     TableGridComponent,
     CardGridComponent,
     PaginationComponent,
-    MediaGridComponent
+    MediaGridComponent,
+    KeysPipe
   ],
   imports: [
     BrowserModule,

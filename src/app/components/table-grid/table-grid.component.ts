@@ -1,14 +1,10 @@
 import { Component, OnInit, Input, Pipe, PipeTransform, OnChanges } from '@angular/core';
-
-import { KeysPipe } from './keys.pipe';
-import { OrderBy } from './orderby.pipe';
 import { Order } from './order';
 
 @Component({
   selector: 'tableGrid',
   templateUrl: './table-grid.component.html',
-  styleUrls: ['./table-grid.component.css'],
-  pipes: [KeysPipe, OrderBy]
+  styleUrls: ['./table-grid.component.css']
 })
 
 export class TableGridComponent implements OnInit {

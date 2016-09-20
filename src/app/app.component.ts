@@ -116,4 +116,8 @@ export class AppComponent {
     //}, 10000);
 
   }
+
+  getDadosWebApi(){
+    
+  }
 }
