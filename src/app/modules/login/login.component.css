@@ -1,0 +1,98 @@
+.ligamos{
+		width: 225px;
+    margin: auto;
+    padding-bottom: 15px;
+}
+
+.panel{
+	width: 30em;
+    margin: auto;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.form{
+    background-color: #fff;
+    border-left: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border: none;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.esqueci{
+    margin: 10px;
+}
+
+
+
+.form-controlErro {
+    color: #da4453;
+    border-color: #da4453;
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(218,68,83,0.075) inset, 0 0 8px rgba(218,68,83,0.6);
+    border: solid 1px;
+}
+.form-controlErro:focus {
+	border-color: #da4453;
+	box-shadow: 0 1px 1px rgba(218,68,83,0.075) inset, 0 0 8px rgba(218,68,83,0.6);
+	outline: 0 none;
+}
+
+.form-control:focus {
+    border-color: #26A65B;
+	border-color: rgba(66, 169, 72, 0.8);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(66, 169, 72, 0.6);
+	outline: 0 none;
+}
+
+.col-xs-12{
+	margin-top: 10px;
+}
+
+.btn-success, .btn-success:active, .btn-success.active, .btn-success.disabled, .btn-success[disabled] {
+	background-color: #26A65B;
+    border-color: #26A65B;
+}
+
+.esqueci-senha{
+    color: #26A65B;
+    text-decoration: none;
+	float: left;
+	padding-top: 14px;
+}
+
+.esqueci-senha:hover{
+    color: #26A65B;
+    text-decoration: none;
+}
+
+.esqueci-senha:focus {
+    color: #26C281;
+    text-decoration: none;
+}
+
+.img-logo{
+	width: 26em;
+    padding-bottom: 2em;
+    padding-top: 2em;
+}

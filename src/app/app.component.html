@@ -1,16 +1,23 @@
-<!--h1>
-  {{title}}
-</h1>
-<loading [visible]="load" text="Carregando"></loading>
+<!--loading [visible]="load" text="Carregando"></loading>
+
+<login></login>
+
+
 
 <tableGrid
 [columns]="cols"
 [rows]="rows"
 [order]="order"
 [pagination]="pagination">
-</tableGrid-->
+</tableGrid>
 
 <cardGrid></cardGrid>
 
 
-<!--mediaGrid></mediaGrid-->
+<mediaGrid></mediaGrid
+
+<nav>
+  <a routerLink="login" routerLinkActive="active">Login</a>
+  <a routerLink="home"  routerLinkActive="active">Home</a>
+</nav>-->
+<router-outlet></router-outlet>

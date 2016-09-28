@@ -32,7 +32,7 @@ export class TableGridComponent implements OnInit {
   @Input() pagination: any = { current : 1, totalRecords : 50, recordPerPage : 4, previous : false, next : false, pagination : true };
 
   constructor() {
-    this.rows = Order.transform(this.rows,'-firstName');
+    this.rows = this.rows; //Order.transform(this.rows,'-firstName');
     this.pagination.previous = false;
     this.pagination.next = true;
   }
@@ -56,7 +56,7 @@ export class TableGridComponent implements OnInit {
       this.order.col = columnName;
       this.order.asc = true;
     }
-    this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
+    this.rows = this.rows; //this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
   }
 
   convertSorting(): string {
@@ -88,12 +88,13 @@ export class TableGridComponent implements OnInit {
   // EVENTS
   ngOnChanges(){
     this.sort = this.order.col;
-    this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
+   this.rows = this.rows; // this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
     this.getPaginationNumberBegin();
 
+    let totalRecords: number = this.rows != null ? this.rows.length : 0;
     if(!this.pagination.pagination)
     {
-      if(this.pagination.totalRecords != this.rows.length)
+      if(this.pagination.totalRecords != totalRecords)
         this.pagination.pagination = false;
     }
 

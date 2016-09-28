@@ -1,0 +1,147 @@
+<div class="row">
+  <div align="center">
+    <div class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
+      <img class="img-logo" src="img/logo_unes_horizontal.svg" />
+    </div>
+  </div>
+
+  <div class="panel">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#login" role="tab">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#contato" role="tab">Contato</a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="login" role="tabpanel">
+        <div class="form">
+          <form>
+            <div class="row">
+
+              <div *ngIf="errorLogin" class="col-xs-12">
+                <div class="alert alert-danger" role="alert">
+                  <strong>Ops!</strong> Não foi possível autenticar no servidor.
+                </div>
+              </div>
+
+
+              <div class="col-xs-12">
+                <label>Usuário</label>
+                <input [(ngModel)]="usuario" name="usuario" type="text" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                  required pattern="\S+">
+              </div>
+              <div class="col-xs-12">
+                <label>Password</label>
+                <input (keypress)="eventHandlerKeyPressAutenticar($event)" name="senha" [(ngModel)]="senha" type="password" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                  required pattern="\S+">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a class="esqueci-senha" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Esqueci a Senha</a>
+              <button *ngIf="login" type="button" (click)="Autenticar()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                style="cursor:pointer;"> Logar </button>
+              <button *ngIf="!login" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
+            </div>
+
+            <div class="collapse" id="collapseExample">
+
+              <div *ngIf="errorSolicitarSenha" class="col-xs-12">
+                <div class="alert alert-danger" role="alert">
+                  <strong>Ops!</strong> Não foi possível efetuar a solicitação ao servidor.
+                </div>
+              </div>
+
+              <div *ngIf="classConditionAlteraSenha"  class="{{classConditionCnpjCpf ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
+                <label class="col-form-label" for="inputDanger1">CPF/CNPJ do Associado</label>
+                <input #inputcpfcnpj [(ngModel)]="cpfcnpj" (keyup)="cnpfCnpjKeyup()" name="cpfcnpj" type="text" class="{{classConditionCnpjCpf ? 'form-control': 'form-control form-control-danger'}}" required pattern="\S+">
+                <div *ngIf="!validaConditionCnpjCpf" class="form-control-feedback">CPF / CNPJ informado inválido.</div>
+                <div *ngIf="!conditionCnpjCpf" class="form-control-feedback">CPF / CNPJ não encontrado em nosso sistema.</div>
+              </div>
+
+              <div *ngIf="classConditionAlteraSenha"  class="{{classConditionCodigo ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
+                <label>Código do Associado</label>
+                <input type="text" [(ngModel)]="codigo" name="codigo" (keyup)="codigoKeyup()" class="{{classCondition ? 'form-control': 'form-controlErro'}}">
+                <div *ngIf="!validaConditionCodigo" class="form-control-feedback">Código não encontrado em nosso sistema.</div>
+              </div>
+
+              <div class="col-xs-12 form-group">
+                <div *ngIf="!txtConditionAlteraSenha" class="alert alert-success" role="alert" style="margin: 12px;">
+                  <div class="medium-12 columns">
+                    <p>Olá Sr(a) {{username}} sua senha foi alterada e enviada por e-mail, por favor verifique o seu email!</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button *ngIf="classConditionAlteraSenha" type="button" (click)="SolicitarSenha()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                  style="cursor:pointer; margin-top: 10px;">Solicitar nova senha</button>
+                <button *ngIf="!conditionAlteraSenha" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="tab-pane" id="contato" role="tabpanel">
+        <div class="form" style="padding-top: 2px;">
+        <div class="alert alert-success" role="alert" style="margin: 12px;">
+
+          <div *ngIf="ligarPhone" class="col-xs-12">
+            <div class="alert alert-info" role="alert">
+              <strong>Ops!</strong> Aguarde alguns instantes, você já contactado.
+            </div>
+          </div>
+
+          <div *ngIf="errorPhone" class="col-xs-12">
+            <div class="alert alert-danger" role="alert">
+              <strong>Ops!</strong> Não foi possível efetuar a solicitação ao servidor.
+            </div>
+          </div>
+
+          <div class="medium-12 columns">
+            <h5 class="ligamos"><img src="img/icon-callback.svg" width="50px;" style="text-align: left !important;"> Ligamos para você</h5>
+            <p>Para a sua comodidade informe o seu número de telefone. Após clicar no botão ligar o seu telefone irá tocar* e um dos nossos atendentes estará pronto para atendê-lo.</p>
+
+            <div class="col-xs-12">
+              <label>Telefone</label>
+              <input [(ngModel)]="telefone" (keyup)="keyupMaskTel()" type="telefone" class="{{classConditionTelefone ? 'form-control': 'form-controlErro'}}" placeholder=""
+                required pattern="">
+            </div>
+            <br /><br />
+
+            <div class="modal-footer">
+              <button *ngIf="!conditionLigar" type="button" (click)="Ligar()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                style="cursor:pointer; margin-top: 10px;">Ligar <i class="fa fa-phone-square fa-lg" aria-hidden="true"></i></button>
+              <button *ngIf="conditionLigar" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
+            </div>
+            <p>* Segunda a Sexta das 8h às 19h</p>
+
+          </div>
+
+          <div class="medium-12 columns">
+            <p><i class="fa fa-volume-control-phone fa-lg" aria-hidden="true"></i> 4004-0435 Ramal: 2520</p>
+            <p><i class="fa fa-whatsapp fa-lg" aria-hidden="true"></i> (79) 99103-7772</p>
+            <p><i class="fa fa-envelope fa-lg" aria-hidden="true"></i> administrativo@serveloja.com.br</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div align="center">
+    <div class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
+      <div class="large-10 large-centered medium-10 medium-centered column" style="font-size: 0.8em; text-align: center !important; margin-bottom: 1.5rem; margin-top: 1.5rem;">
+        Copyright © 2016 Serveloja. Todos os direitos reservados.
+      </div>
+    </div>
+  </div>
+
+</div>

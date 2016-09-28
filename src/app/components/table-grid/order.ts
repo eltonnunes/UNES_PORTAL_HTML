@@ -1,6 +1,6 @@
 export class Order {
 
-	static value:string[] =[];
+	/*static value:string[] =[];
 
 	static _OrderComparator(a:any, b:any):number{
 
@@ -68,5 +68,5 @@ export class Order {
                 return 0; //equal each other
             });
         }
-    }
+    }*/
 }

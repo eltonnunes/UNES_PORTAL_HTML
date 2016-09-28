@@ -1,0 +1,108 @@
+<div class="row">
+  <div align="center">
+    <div class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
+      <img class="img-logo" src="img/logo_unes_horizontal.svg" />
+    </div>
+  </div>
+
+  <div class="panel">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#login" role="tab">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#contato" role="tab">Contato</a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="login" role="tabpanel">
+        <div class="form">
+          <form>
+            <div class="row">
+              <div class="col-xs-12">
+                <label>Usuário</label>
+                <input [(ngModel)]="usuario" name="usuario" type="text" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                  required pattern="\S+">
+              </div>
+              <div class="col-xs-12">
+                <label>Password</label>
+                <input (keypress)="eventHandlerKeyPressAutenticar($event)" name="senha" [(ngModel)]="senha" type="password" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                  required pattern="\S+">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a class="esqueci-senha" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Esqueci a Senha</a>
+              <!-- E-mail, Código, CPF / CNPJ-->
+              <button *ngIf="login" type="button" (click)="Autenticar()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                style="cursor:pointer;"> Logar </button>
+              <button *ngIf="!login" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
+            </div>
+
+            <div class="collapse" id="collapseExample">
+
+              <div class="{{classConditionEmail ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
+                <label>E-mail</label>
+                <input [(ngModel)]="email" (keyup)="ValidacaoEmailKeyUp()" name="email" type="text" class="{{classConditionEmail ? 'form-control': 'form-control form-control-danger'}}">
+              </div>
+
+              <div class="col-xs-12">
+                <label>Código</label>
+                <input type="password" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                  required pattern="">
+              </div>
+
+              <div class="{{classConditionCnpjCpf ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
+                <label class="col-form-label" for="inputDanger1">CPF / CNPJ</label>
+                <input #inputcpfcnpj [(ngModel)]="cpfcnpj" (keyup)="cnpfCnpjKeyup()" name="cpfcnpj" type="text" class="{{classConditionCnpjCpf ? 'form-control': 'form-control form-control-danger'}}">
+                <div *ngIf="!classConditionCnpjCpf" class="form-control-feedback">Por favor verifique os dados informados.</div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" (click)="Autenticar(usuario.value, senha.value)" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                  style="cursor:pointer;">Solicitar nova senha</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="tab-pane" id="contato" role="tabpanel">
+        <div class="text-center well">
+
+          <div class="medium-12 columns">
+            <h5><img src="img/icon-callback.svg" width="100px;" style="text-align: left !important;"> Ligamos para você</h5>
+          </div>
+
+
+          <div class="medium-12 columns">
+            <h5><i class="glyphicon glyphicon-earphone">&nbsp;</i>4004-0435 Ramal: 2520</h5>
+          </div>
+
+
+          <div class="medium-12 columns">
+            <h5>
+              <img src="img/icon-whatsapp-36x36.png" width="24px" />&nbsp;(79) 99103-7772
+            </h5>
+          </div>
+
+          <div class="medium-12 columns">
+            <h5><i class="glyphicon glyphicon-envelope">&nbsp;</i>administrativo@serveloja.com.br</h5>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div align="center">
+    <div class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
+      <div class="large-10 large-centered medium-10 medium-centered column" style="font-size: 0.8em; text-align: center !important; margin-bottom: 1.5rem; margin-top: 1.5rem;">
+        Copyright © 2016 Serveloja. Todos os direitos reservados.
+      </div>
+    </div>
+  </div>
+
+</div>
