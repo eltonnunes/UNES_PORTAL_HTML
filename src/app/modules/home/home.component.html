@@ -1,3 +1,166 @@
-<p>
-  home works!
-</p>
+<header [userName]="userName"></header>
+
+
+
+<div class="container">
+
+  <!-- breadcrumb -->
+  <div class="col-md-12 breadcrumb">
+    <div class="row">
+
+      <div class="col-lg-8" style="margin-top:7px;">
+        <nav class="">
+          <a class="breadcrumb-item" style="cursor:pointer;" (click)="onTagSelected({ID: '0', NAME: ''})">Home</a>
+          <span class="breadcrumb-item active">{{tagSelectedName}}</span>
+        </nav>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="input-group">
+          <input name="busca" [(ngModel)]="busca" (keypress)="onBuscaKeyPress($event)" type="text" class="form-control" placeholder="Pesquisar..." required="">
+          <span class="input-group-btn">
+            <button class="btn btn-secondary" (click)="find()" type="button">Buscar</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3" style="margin-top: 8px;">
+
+      <navmenu [rows]="Tags.Registros" (selectedTag)="onSelectedTag($event)"></navmenu>
+
+    </div>
+    <div class="col-md-9">
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" *ngIf="tagSelectedVisible">
+          <a [class]="tagActiveTag ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#tag" (click)="onSelectTab('tag')" role="tab">{{tagSelectedName}}</a>
+        </li>
+        <li class="nav-item" *ngIf="findSelectedVisible">
+          <a [class]="findActiveTag ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#find" (click)="onSelectTab('find')" role="tab">Pesquisa</a>
+        </li>
+        <li class="nav-item">
+          <a [class]="tagActiveTodos ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#todos" (click)="onSelectTab('todos')" role="tab">Todos</a>
+        </li>
+        <li class="nav-item">
+          <a [class]="tagActiveVisto ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#visto" (click)="onSelectTab('visto')" role="tab">+ Visto</a>
+        </li>
+        <li class="nav-item">
+          <a [class]="tagActiveRecente ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#recente" (click)="onSelectTab('recente')" role="tab">+ Recente</a>
+        </li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div [class]="tagActiveTodos ? 'tab-pane active' : 'tab-pane fade'" id="todos" role="tabpanel">
+            <cardGrid
+              [rows]="Videos"
+              [recordPerPage]="6"
+              (currentUpdate)="onCurrentUpdateTodos($event)"
+              [totalRecords]="Videos.TotalDeRegistros"
+              (videoSelected)="onVideoSelected($event)"
+              (tagSelected)="onTagSelected($event)"></cardGrid>
+        </div>
+        <div [class]="tagActiveVisto ? 'tab-pane active' : 'tab-pane fade'" id="visto" role="tabpanel">
+            <cardGrid
+              [rows]="VideosMaisVistos"
+              [recordPerPage]="6"
+              (currentUpdate)="onCurrentUpdateMaisVistos($event)"
+              [totalRecords]="VideosMaisVistos.TotalDeRegistros"
+              (videoSelected)="onVideoSelected($event)"
+              (tagSelected)="onTagSelected($event)"></cardGrid>
+        </div>
+        <div [class]="tagActiveRecente ? 'tab-pane active' : 'tab-pane fade'" id="recente" role="tabpanel">
+            <cardGrid
+              [rows]="VideosMaisRecentes"
+              [recordPerPage]="6"
+              (currentUpdate)="onCurrentUpdateMaisRecentes($event)"
+              [totalRecords]="VideosMaisRecentes.TotalDeRegistros"
+              (videoSelected)="onVideoSelected($event)"
+              (tagSelected)="onTagSelected($event)"></cardGrid>
+        </div>
+        <div [class]="tagActiveTag ? 'tab-pane active' : 'tab-pane fade'" id="tag" role="tabpanel">
+            <cardGrid
+              [rows]="VideosTags"
+              [recordPerPage]="6"
+              (currentUpdate)="onCurrentUpdateTags($event)"
+              [totalRecords]="VideosTags.TotalDeRegistros"
+              (videoSelected)="onVideoSelected($event)"
+              (tagSelected)="onTagSelected($event)"></cardGrid>
+        </div>
+
+        <div class="col-md-12" *ngIf="findActiveTag">
+          <div class="card card-block" style="    margin-top: 25px;">
+            <strong>Resultado da pesquisa por: </strong> {{busca}}
+          </div>
+        </div>
+
+        <div [class]="findActiveTag ? 'tab-pane active' : 'tab-pane fade'" id="find" role="tabpanel">
+            <cardGrid
+              [rows]="VideosBusca"
+              [recordPerPage]="6"
+              (currentUpdate)="onCurrentUpdateFind($event)"
+              [totalRecords]="VideosBusca.TotalDeRegistros"
+              (videoSelected)="onVideoSelected($event)"
+              (tagSelected)="onTagSelected($event)"></cardGrid>
+        </div>
+
+        <div class="col-md-12" *ngIf="resultadoConsulta">
+          <div class="card card-block">
+            <strong>Ops!</strong> Não encontramos resultados para consulta.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<nav class="navbar navbar-default navbar-custom" style="margin-bottom: 0px">
+  <div class="container">
+    <div class="navbar-header">
+      <div class="row">
+        <div _ngcontent-prs-3="" align="center">
+          <div _ngcontent-prs-3="" class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
+            <div _ngcontent-prs-3="" class="large-10 large-centered medium-10 medium-centered column" style="font-size: 0.8em; text-align: center !important; margin-bottom: 1.5rem; margin-top: 3.5rem;">
+              Copyright © 2016 Serveloja. Todos os direitos reservados.<br /> Versão 1.0.0
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<loading [visible]="load" text="Carregando"></loading>
+
+
+<!-- modal -->
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" (click)="closeVideo()" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">{{TITULO_VIDEO}}</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" [src]="URL_HASH_VIDEO" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <p>{{TEXTO_VIDEO}}</p>
+      </div>
+
+    </div>
+  </div>
+</div>

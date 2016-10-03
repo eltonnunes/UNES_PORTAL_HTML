@@ -1,0 +1,32 @@
+<!--nav-->
+<nav class="navbar navbar-default navbar-custom" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <div class="row">
+
+        <div class="col-lg-8">
+          <a class="navbar-brand">
+            <img _ngcontent-ayj-3="" height="81em" src="img/logo_unes_horizontal.svg">
+          </a>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="btn-group" style=" margin-top: 20px; float: right;">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{userName}}
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+              <strong style="width: 112px; margin: auto; display: block;">Administração</strong>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" type="button">Vídeos</button>
+              <button class="dropdown-item" type="button">Tags</button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" (click)="Sair()" type="button">Sair</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>

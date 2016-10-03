@@ -1,19 +1,44 @@
-    <div class="card" *ngFor="let card of rows">
-      <img class="card-img-top" data-src="holder.js/100px180/" alt="100%x180" [src]="card.img"
-           data-holder-rendered="true" style="height: 180px; width: 100%; display: block;">
+    <div class="card" *ngFor="let card of rows.Registros">
+      <img class="card-img-top"
+          data-toggle="modal"
+          data-target=".bd-example-modal-lg"
+           data-src="holder.js/100px180/"
+           alt="100%x180"
+           src="https://i.ytimg.com/vi/{{card.UNV_TX_HASH}}/hqdefault.jpg?custom=true&amp;w=196&amp;h=110&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=GYxCech-1w2dDG0BZhqs1t4_Fck"
+           data-holder-rendered="true"
+           style="height: 180px; width: 100%; display: block; cursor:pointer"
+           (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
       <div class="card-block">
-        <span class="tag tag-success">{{card.tag}}</span>
-        <h4 class="card-title">{{card.title}}</h4>
-        <p class="card-text fade">{{card.text}}</p>
+        <span
+          class="tag tag-success"
+          style="cursor:pointer"
+          (click)="onTagSelected({ ID: card.UNT_TAG.UNT_ID_TAG, NAME: card.UNT_TAG.UNT_TX_NOME})"
+          >{{card.UNT_TAG.UNT_TX_NOME}}</span>
+        <h6
+          class="card-title"
+          data-toggle="modal"
+          data-target=".bd-example-modal-lg"
+          style="cursor:pointer"
+          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
+          {{card.UNV_TX_TITULO}}</h6>
+        <p
+          class="card-text fade"
+          data-toggle="modal"
+          data-target=".bd-example-modal-lg"
+          style="cursor:pointer"
+          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
+          {{card.UNV_TX_DESCRICAO}}</p>
       </div>
     </div>
 
+
     <pagination
-    [current] = "pagination.current"
-    [totalRecords] = "pagination.totalRecords"
-    [recordPerPage] = "pagination.recordPerPage"
-    [previous] = "pagination.previous"
-    [next] = "pagination.next"
-    [pagination] = "pagination.pagination"
-    [totalRows] = "rows.length"
+    [current] = "current"
+    [totalRecords] = "totalRecords"
+    [recordPerPage] = "recordPerPage"
+    [previous] = "previous"
+    [next] = "next"
+    [pagination] = "pagination"
+    [totalRows] = "length"
+    (currentUpdate)="onCurrentUpdate($event)"
     ></pagination>

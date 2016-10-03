@@ -22,9 +22,8 @@ export class LoginService {
 
     constructor (private http: Http, private router: Router) {}
 
-    // URL to web API
-    private API_URL: string =  GlobalVariable.BASE_API_URL
-                                              + 'TbUsuarioAlias';
+    // URL web API Autenticação
+    private API_URL: string =  GlobalVariable.BASE_API_URL + 'TbUsuarioAlias';
 
 
     // Autenticar no Servidor
@@ -38,9 +37,9 @@ export class LoginService {
                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     }
 
-
+    // Valida se o CPF / CNPJ existe em nosso sistema.
     public getValidateCpfCnpj(CpfCnpj) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/NgAzADYAMQAwADUAOQA5ADIAOQAwADcAMAA2ADgANgA5ADYAMgAwADEANgA5ADIANwAwADUAMAA1ADMANgAwAC0AMQA5ADYAMQA4ADUAOQA2ADQAMwAyADcALwAwADkALwAyADAAMQA2ACAAMQA4ADoANQA0ADoANQAwAC0AOAA5ADcAOAAxADYANAAzADEAMQA1ADIAOAA2ADQANAAzADQAOQAA'
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
                                                         + '/0/100/1/0/0?101=' + CpfCnpj;
 
         return this.http.get(urlapi)
@@ -50,9 +49,9 @@ export class LoginService {
     }
 
 
-
+    // Valida se o Código Informado é válido
     public getValidateCodigo(Codigo) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/NgAzADYAMQAwADUAOQA5ADIAOQAwADcAMAA2ADgANgA5ADYAMgAwADEANgA5ADIANwAwADUAMAA1ADMANgAwAC0AMQA5ADYAMQA4ADUAOQA2ADQAMwAyADcALwAwADkALwAyADAAMQA2ACAAMQA4ADoANQA0ADoANQAwAC0AOAA5ADcAOAAxADYANAAzADEAMQA1ADIAOAA2ADQANAAzADQAOQAA'
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
                                                         + '/0/100/1/0/0?100=' + Codigo;
 
         return this.http.get(urlapi)
@@ -61,8 +60,9 @@ export class LoginService {
 
     }
 
+    // Recupera Senha
     public getAlteraSenha(Codigo, CpfCnpj) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/NgAzADYAMQAwADUAOQA5ADIAOQAwADcAMAA2ADgANgA5ADYAMgAwADEANgA5ADIANwAwADUAMAA1ADMANgAwAC0AMQA5ADYAMQA4ADUAOQA2ADQAMwAyADcALwAwADkALwAyADAAMQA2ACAAMQA4ADoANQA0ADoANQAwAC0AOAA5ADcAOAAxADYANAAzADEAMQA1ADIAOAA2ADQANAAzADQAOQAA'
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
                                                         + '/0/100/1/0/0?100=' + Codigo + '&101=' + CpfCnpj;
 
         return this.http.get(urlapi)
@@ -83,7 +83,7 @@ export class LoginService {
                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     }
 
-
+    // Efetua Logout
     public Logout() {
             localStorage.clear();
             sessionStorage.clear();

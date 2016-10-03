@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'pagination',
@@ -15,8 +15,10 @@ export class PaginationComponent implements OnInit {
   @Input() pagination: boolean = true;
   @Input() totalRows : number = 50;
 
+  @Output() currentUpdate = new EventEmitter();
+
     constructor() {
-      this.previous = false;
+      this.previous = true;
       this.next = true;
       this.pagination = true;
     }
@@ -26,15 +28,14 @@ export class PaginationComponent implements OnInit {
 
     getPaginationNumberBegin(): any{
       let res = [];
-      let init = this.current < 3 ? 1 : this.current - 3;
-      let finish =  (Math.round(this.totalRecords / this.recordPerPage)+1) > (this.current + 4) ? this.current + 4 : Math.round(this.totalRecords / this.recordPerPage);
+      let init = this.current <= 3
+                 ? 1
+                 : this.current - 3;
+      let finish =  (Math.round(this.totalRecords / this.recordPerPage) > (this.current + 4)
+                    ? this.current + 4
+                    : Math.round(this.totalRecords / this.recordPerPage)+1);
 
-      if(this.current > 1)
-        this.previous = true;
-      else
-        this.previous = false;
-
-      if((Math.round(this.totalRecords / this.recordPerPage)+1) > (this.current + 4))
+      if((Math.round(this.totalRecords / this.recordPerPage)) > (this.current + 4))
         this.next = true;
       else
         this.next = false;
@@ -48,12 +49,53 @@ export class PaginationComponent implements OnInit {
 
     // EVENTS
     ngOnChanges(){
-      this.getPaginationNumberBegin();
-
       if(!this.pagination)
       {
         if(this.totalRecords != this.totalRecords)
           this.pagination = false;
       }
+    }
+
+
+    setCurrent(currentValue){
+      this.current = currentValue;
+      this.currentUpdate.emit({current: this.current});
+
+      if(this.current > 1)
+      {
+        this.previous = true;
+      }
+      if(this.current == 1)
+      {
+        this.previous = false;
+      }
+
+    }
+
+    setPrevious(){
+      if(this.current > 1)
+      {
+        this.previous = true;
+        this.current--;
+        this.currentUpdate.emit({current: this.current});
+
+        if(this.current == 1)
+        {
+          this.previous = false;
+        }
+      }
+      else
+      {
+        this.previous = false;
+      }
+    }
+
+    setNext(){
+      this.current++;
+      if(this.current > 1)
+      {
+        this.previous = true;
+      }
+      this.currentUpdate.emit({current: this.current});
     }
 }

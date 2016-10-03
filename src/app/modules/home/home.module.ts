@@ -6,9 +6,22 @@ import { HomeComponent } from './home.component';
 import { GlobalVariable } from '../../globals';
 import { routing } from './home.routing';
 
+import { LoadingComponent } from '../../components/loading/loading.component';
+import { HeaderComponent } from '../../components/header/header.component';
+import { MenuComponent } from '../../components/menu/menu.component';
+import { CardGridComponent } from '../../components/card-grid/card-grid.component';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
+
+import { HomeService } from './home.service';
+
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
+    LoadingComponent,
+    HeaderComponent,
+    MenuComponent,
+    CardGridComponent,
+    PaginationComponent
   ],
   imports: [
     CommonModule,
@@ -16,6 +29,7 @@ import { routing } from './home.routing';
     routing
   ],
   providers: [
+    HomeService
   ],
   bootstrap: [HomeComponent]
 })

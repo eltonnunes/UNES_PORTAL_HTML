@@ -1,0 +1,14 @@
+<div class="list-group">
+  <button
+        type="button"
+        class="list-group-item list-group-item-action active"
+        (click)="onEventTagSelected(0, '')">
+         Home</button>
+  <button
+       *ngFor="let tag of rows"
+       type="button"
+       class="list-group-item list-group-item-action"
+       (click)="onEventTagSelected(tag.UntIdTag, tag.UntTxNome)">
+       {{tag.UntTxNome}}
+  </button>
+</div>

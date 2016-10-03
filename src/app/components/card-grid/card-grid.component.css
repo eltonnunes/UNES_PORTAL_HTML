@@ -25,3 +25,8 @@
     padding: 1.25rem;
     height: 260px;
 }
+
+.tag-success {
+    background-color: #26A65B;
+    cursor: pointer;
+}
