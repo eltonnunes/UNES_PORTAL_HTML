@@ -86,8 +86,7 @@ export class LoginComponent implements OnInit {
     return v;
   }
 
-  keyupMaskTel()
-  {
+  keyupMaskTel(){
     this.telefone = this.MaskTel(this.telefone);
   }
 
@@ -103,18 +102,25 @@ export class LoginComponent implements OnInit {
     this.loginService.Autenticar({ 'usuario' : this.usuario, 'senha' : this.senha })
                       .subscribe(
                           retorno => {
-                            this.retorno = retorno;
-                            let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
+                            if( retorno.Registros != null)
+                            {
+                              this.retorno = retorno;
+                              let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
 
-                            localStorage.setItem('auth_token', this.retorno.Registros[0].UTA_TX_TOKEN);
-                            localStorage.setItem('auth_validate', this.retorno.Registros[0].UTA_DT_VALIDADE);
-                            sessionStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
-                            sessionStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
+                              localStorage.setItem('auth_token', this.retorno.Registros[0].UTA_TX_TOKEN);
+                              localStorage.setItem('auth_validate', this.retorno.Registros[0].UTA_DT_VALIDADE);
+                              sessionStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
+                              sessionStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
 
-                            this.login = true;
-                            this.loggedIn = true;
+                              this.login = true;
+                              this.loggedIn = true;
 
-                            this.router.navigate(['/home']);
+                              this.router.navigate(['/home']);
+                            }
+                            else{
+                              this.login = true;
+                              this.errorLogin  = true;
+                            }
                           },
                           err => {
                              this.login = true;

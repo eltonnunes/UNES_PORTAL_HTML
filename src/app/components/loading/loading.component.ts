@@ -14,8 +14,8 @@ export class LoadingComponent {
   constructor() {}
 
   ngOnChanges() {
-    console.log('ngOnChanges ');
-    console.log('Visivel: ' + this.visible);
+    //console.log('ngOnChanges ');
+    //console.log('Visivel: ' + this.visible);
   }
 
 }

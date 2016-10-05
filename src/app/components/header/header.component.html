@@ -18,10 +18,10 @@
             <div class="dropdown-menu dropdown-menu-right">
               <strong style="width: 112px; margin: auto; display: block;">Administração</strong>
               <div class="dropdown-divider"></div>
-              <button class="dropdown-item" type="button">Vídeos</button>
-              <button class="dropdown-item" type="button">Tags</button>
+              <button class="dropdown-item" (click)="open('admVideo')" type="button">Vídeos</button>
+              <!--button class="dropdown-item" (click)="open('admTag')"type="button">Tags</button-->
               <div class="dropdown-divider"></div>
-              <button class="dropdown-item" (click)="Sair()" type="button">Sair</button>
+              <button class="dropdown-item" (click)="eventSair()" type="button">Sair</button>
             </div>
           </div>
         </div>

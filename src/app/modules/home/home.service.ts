@@ -75,6 +75,41 @@ export class HomeService {
 
         return this.http.put(urlapi, bodyString, options)
                         .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
+  }
 
+  public AtualizaVideo(body: any): Observable<Response> {
+        let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token') + '/alterar';
+        let bodyString = JSON.stringify(body);
+        let headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+
+        return this.http.put(urlapi, bodyString, options)
+                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+
+  public RemoverVideo(id: any): Observable<Response> {
+        let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token') + '/' + id;
+        return this.http.delete(urlapi)
+                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+
+  public YoutubeBuscarDadosVideo(HASH: any): Observable<Response> {
+        let urlYoutubeApi = 'https://www.googleapis.com/youtube/v3/videos?id=' + HASH + '&key=AIzaSyCZrRSmvH3-gDN0YC9PYHLP--FR9OaaYkI&fields=items(id,snippet(channelId,title,description,categoryId),statistics)&part=snippet';
+        return this.http.get(urlYoutubeApi)
+                        .map((res:Response) => res.json())
+                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+  public CadastrarVideo(body: any): Observable<number> {
+    let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token');
+    let bodyString = JSON.stringify(body);
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.post(urlapi, bodyString, options)
+                     .map((res:Response) => res.json())
+                     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+   }
 }

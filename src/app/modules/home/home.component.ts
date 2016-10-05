@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit {
   tagSelectedId: number = 0;
   tagSelectedVisible: Boolean = false;
   findSelectedVisible: Boolean = false;
+  admVideoSelectVisible: Boolean = false;
+  admTagSelectVisible: Boolean = false;
   tagSelectedName: string = '';
   resultadoConsulta: Boolean = false;
   URL_HASH_VIDEO:SafeUrl;
@@ -35,12 +37,43 @@ export class HomeComponent implements OnInit {
   TEXTO_VIDEO: string = '';
   ID_VIDEO: number = 0;
   busca: string = '';
+  selectedTagId: number = 0;
+  pasteHash: string = '';
+  msgTimeout: number = 500;
+  newTag: string = '';
+
+  ADMIN_EDIT_URL_HASH_VIDEO:SafeUrl;
+  ADMIN_EDIT_TITULO_VIDEO: string = '';
+  ADMIN_EDIT_TEXTO_VIDEO: string = '';
+  ADMIN_EDIT_ID_VIDEO: number = 0;
+  ADMIN_EDIT_TAG_NAME: string = '';
+  ADMIN_EDIT_TAG_ID: number = 0;
+  ADMIN_EDIT_OBJECT: any;
+
+  ADMIN_NEW_HASH_VIDEO:string = '';
+  ADMIN_NEW_URL_HASH_VIDEO:SafeUrl;
+  ADMIN_NEW_TITULO_VIDEO: string = '';
+  ADMIN_NEW_TEXTO_VIDEO: string = '';
+  ADMIN_NEW_ID_VIDEO: number = 0;
+  ADMIN_NEW_TAG_NAME: string = '';
+  ADMIN_NEW_TAG_ID: number = 0;
+  ADMIN_NEW_OBJECT: any;
 
   tagActiveTodos: Boolean = true;
   tagActiveVisto: Boolean = false;
   tagActiveRecente: Boolean = false;
   tagActiveTag: Boolean = false;
   findActiveTag: Boolean = false;
+  admVideoActiveTag: Boolean = false;
+  admTagActiveTag: Boolean = false;
+  admVideoSelectedVisible: Boolean = false;
+  admTagSelectedVisible: Boolean = false;
+
+  selectClassConditionEditTag: Boolean = true;
+  selectClassConditionNewTag: Boolean = true;
+  isPasting: Boolean = false;
+  msgSucesso: Boolean = false;
+  msgErro: Boolean = false;
 
   Tags: Retorno = new Retorno(Object[0],0,0,0);
   Videos: Retorno = new Retorno(Object[0],0,0,0);
@@ -56,25 +89,27 @@ export class HomeComponent implements OnInit {
               private sanitizer   : DomSanitizer
             ) {
 
-    this.ResetShowVideo();
-
     if (localStorage.getItem('auth_token') == null)
         this.loginService.Logout();
 
-
     this.userName = sessionStorage.getItem('nome');
-    this.getTagsMenu();
-    this.getVideos(1);
-    this.getVideosMaisVistos(1);
-    this.getVideosMaisRecentes(1);
-
     this.tagSelectedName = 'Todos Videos'
+
+
+
+    this.ResetShowVideo();
+
+
+
+
 
   }
 
   ngOnInit() {
-    /*this.load = false;
-    console.log(this.Tags);*/
+
+
+    //this.load = false;
+    /*console.log(this.Tags);*/
   }
 
   // FUNCTIONs
@@ -103,7 +138,87 @@ export class HomeComponent implements OnInit {
         this.ID_VIDEO = 0;
   }
 
-  // GETs
+  edit(){
+    this.load = true;
+    let alteracoes: Boolean = false;
+
+    if( this.ADMIN_EDIT_TITULO_VIDEO != this.ADMIN_EDIT_OBJECT.UNV_TX_TITULO)
+    {
+      alteracoes = true;
+      this.ADMIN_EDIT_OBJECT.UNV_TX_TITULO = this.ADMIN_EDIT_TITULO_VIDEO;
+    }
+
+    if( this.ADMIN_EDIT_TEXTO_VIDEO != this.ADMIN_EDIT_OBJECT.UNV_TX_DESCRICAO)
+    {
+      alteracoes = true;
+      this.ADMIN_EDIT_OBJECT.UNV_TX_DESCRICAO = this.ADMIN_EDIT_TEXTO_VIDEO;
+    }
+
+    if( this.ADMIN_EDIT_TAG_ID != this.ADMIN_EDIT_OBJECT.UNT_ID_TAG)
+    {
+      alteracoes = true;
+      this.ADMIN_EDIT_OBJECT.UNT_ID_TAG = this.ADMIN_EDIT_TAG_ID;
+      this.ADMIN_EDIT_OBJECT.UNT_TAG = this.getTagObject(this.ADMIN_EDIT_TAG_ID);
+    }
+
+    if(alteracoes){
+
+      this.putAlterarVideo();
+
+      for (let i = 0; i < this.Videos.Registros.length; i++) {
+          if( this.Videos.Registros[i].UNV_ID_VIDEOS == this.ADMIN_EDIT_ID_VIDEO){
+            this.Videos.Registros[i] = this.ADMIN_EDIT_OBJECT;
+          }
+      }
+
+    }
+
+  }
+
+  salvar(){
+    this.isPasting = false;
+    this.load = true;
+    this.pasteHash = '';
+
+    let VideoObject: any = {
+      UNV_ID_VIDEOS: -1,
+      UNV_TX_TITULO: this.ADMIN_NEW_TITULO_VIDEO,
+      UNV_TX_DESCRICAO: this.ADMIN_NEW_TEXTO_VIDEO,
+      UNV_NR_VIEW: 0,
+      UNV_NR_LIKE: 0,
+      UNV_DT_DATA: new Date(),
+      UNT_ID_TAG: this.ADMIN_NEW_TAG_ID,
+      UNV_TX_HASH: this.ADMIN_NEW_HASH_VIDEO
+    };
+
+    this.ADMIN_NEW_OBJECT = this.Videos.Registros[0];
+
+    this.ADMIN_NEW_OBJECT.UNV_TX_TITULO = this.ADMIN_NEW_TITULO_VIDEO;
+    this.ADMIN_NEW_OBJECT.UNV_TX_DESCRICAO = this.ADMIN_NEW_TEXTO_VIDEO;
+    this.ADMIN_NEW_OBJECT.UNV_TX_HASH = this.ADMIN_NEW_HASH_VIDEO;
+
+    this.postAdicionaVideo(VideoObject);
+  }
+
+  closeModalNew(){
+    this.isPasting = false;
+  }
+
+
+    // GETs
+  getTagObject(Id_Tag):any{
+    for (let i = 0; i < this.Tags.Registros.length; i++) {
+        if( this.Tags.Registros[i].UntIdTag == Id_Tag)
+        {
+          return {
+                  "UNT_ID_TAG": this.Tags.Registros[i].UntIdTag,
+                  "UNT_TX_NOME": this.Tags.Registros[i].UntTxNome,
+                  "TB_UNIVERSIDADE_VIDEOS": []
+                  }
+        }
+    }
+  }
+
   getTagsMenu(){
     this.homeService.ListaTagsMenu()
                       .subscribe(
@@ -121,6 +236,27 @@ export class HomeComponent implements OnInit {
   }
 
   getVideos(pg){
+    this.homeService.ListaVideos(pg)
+                      .subscribe(
+                          retorno => {
+                            if(retorno.Registros[0] == undefined)
+                              this.resultadoConsulta = true;
+                            else
+                              this.resultadoConsulta = false;
+
+                            this.Videos = retorno;
+                            if(this.Videos.Registros != null)
+                              this.load = false;
+                            else
+                              this.load = false;
+                          },
+                          err => {
+                              console.log(err);
+                              this.load = false;
+                          });
+  }
+
+  getAdminVideos(pg){
     this.homeService.ListaVideos(pg)
                       .subscribe(
                           retorno => {
@@ -232,6 +368,99 @@ export class HomeComponent implements OnInit {
                           });
   }
 
+  getYoutubeDadosVideo(hashVideo){
+    this.homeService.YoutubeBuscarDadosVideo(hashVideo)
+                      .subscribe(
+                          data => {
+                            console.log(data);
+                            var videos = <any>data;
+                            console.log(videos.items[0]);
+                            if(videos.items[0] != undefined)
+                            {
+                              this.load = false;
+                              this.isPasting = true;
+
+                              let url:string = 'https://i.ytimg.com/vi/' + hashVideo + '/hqdefault.jpg';
+                              this.ADMIN_NEW_HASH_VIDEO = hashVideo;
+                              this.ADMIN_NEW_URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+                              this.ADMIN_NEW_TITULO_VIDEO = videos.items[0].snippet.title;
+                              this.ADMIN_NEW_TEXTO_VIDEO = videos.items[0].snippet.description;
+                              }
+                            else
+                            {
+                              this.isPasting = false;
+                              this.load = false;
+                            }
+                          },
+                          err => {
+                              console.log(err);
+                              this.load = false;
+                          });
+  }
+
+  putAlterarVideo(){
+      let returnOperation: Response;
+
+      this.homeService.AtualizaVideo(this.ADMIN_EDIT_OBJECT).subscribe(
+          retorno => {
+                        returnOperation = retorno;
+                        this.load = false;
+                        setTimeout(() => {
+                          this.msgSucesso = true;
+                        }, this.msgTimeout);
+                      },
+          err => {
+                    console.log(err);
+                    this.load = false;
+                    setTimeout(() => {
+                      this.msgErro = true;
+                    }, this.msgTimeout);
+                 });
+  }
+
+  deleteRemoverVideo(id){
+    this.homeService.RemoverVideo(id).subscribe(
+        retorno => {
+                  this.load = false;
+                  setTimeout(() => {
+                    this.msgSucesso = true;
+                  }, this.msgTimeout);
+                 /*console.log(retorno)*/
+               },
+        err => {
+                  console.log(err);
+                  this.load = false;
+                  setTimeout(() => {
+                    this.msgErro = true;
+                  }, this.msgTimeout);
+               });
+  }
+
+  postAdicionaVideo(video){
+    let returnOperation: number;
+
+    this.homeService.CadastrarVideo(video).subscribe(
+        retorno => {
+                    returnOperation = retorno;
+                    this.load = false;
+                    //console.log(retorno);
+                    this.ADMIN_NEW_ID_VIDEO = retorno;
+                    this.ADMIN_NEW_OBJECT.UNV_ID_VIDEOS = retorno;
+                    this.ADMIN_NEW_OBJECT.UNT_ID_TAG = this.ADMIN_NEW_TAG_ID;
+                    this.ADMIN_NEW_OBJECT.UNT_TAG = this.getTagObject(this.ADMIN_NEW_TAG_ID);
+                    this.Videos.Registros.push(this.ADMIN_NEW_OBJECT);
+                    setTimeout(() => {
+                      this.msgSucesso = true;
+                    }, this.msgTimeout);
+                  },
+        err => {
+                  console.log(err);
+                  setTimeout(() => {
+                    this.msgErro = true;
+                  }, this.msgTimeout);
+               });
+  }
+
 
   // EVENTs
   onBuscaKeyPress(event){
@@ -239,27 +468,43 @@ export class HomeComponent implements OnInit {
       this.find();
   }
 
+  onCurrentUpdateAdminVideo(event){
+    this.load = true;
+    this.getAdminVideos(event.current);
+  }
+
   onCurrentUpdateTodos(event){
+    this.load = true;
     this.getVideos(event.current);
   }
 
   onCurrentUpdateMaisVistos(event){
+    this.load = true;
     this.getVideosMaisVistos(event.current);
   }
 
   onCurrentUpdateMaisRecentes(event){
+    this.load = true;
     this.getVideosMaisRecentes(event.current);
   }
 
   onCurrentUpdateTags(event){
+    this.load = true;
     this.getVideosTags(event.current, this.tagSelectedId);
   }
 
+  onSair(event){
+    this.load = true;
+    this.loginService.Logout();
+  }
+
   onCurrentUpdateFind(event){
+    this.load = true;
     this.getPesquisa(event.current, this.busca);
   }
 
   onVideoSelected(event){
+
     let returnOperation: Response;
 
     this.homeService.AtualizaViewVideo({ UNV_ID_VIDEOS: event.ID }).subscribe(
@@ -273,13 +518,42 @@ export class HomeComponent implements OnInit {
     this.ID_VIDEO = event.ID;
   }
 
+  onVideoAdminEditSelected(event){
+    let url:string = 'https://i.ytimg.com/vi/' + event.HASH + '/hqdefault.jpg';
+    this.ADMIN_EDIT_URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.ADMIN_EDIT_TITULO_VIDEO = event.TITULO;
+    this.ADMIN_EDIT_TEXTO_VIDEO = event.TEXTO;
+    this.ADMIN_EDIT_ID_VIDEO = <number>event.ID;
+    this.ADMIN_EDIT_TAG_NAME = event.NAME_TAG;
+    this.ADMIN_EDIT_TAG_ID = event.ID_TAG
+    this.ADMIN_EDIT_OBJECT = event.OBJECT;
+  }
+
+  onChangeEditTag(event) {
+        if (this.ADMIN_EDIT_TAG_ID == 0)
+            this.selectClassConditionEditTag = false;
+        else
+            this.selectClassConditionEditTag = true;
+        this.ADMIN_EDIT_TAG_ID = event;
+  }
+
+  onChangeNewTag(event) {
+        if (this.ADMIN_NEW_TAG_ID == 0)
+            this.selectClassConditionNewTag = false;
+        else
+            this.selectClassConditionNewTag = true;
+        this.ADMIN_NEW_TAG_ID = event;
+  }
+
   onTagSelected(event){
     this.onSelectedTag({IdTag: event.ID, NameTag: event.NAME});
   }
 
   onSelectTab(tabName){
-    tabName != 'find' ? this.busca = '': this.tagSelectedName = 'Pesquisa';
 
+    tabName != 'find' ? this.busca = '': this.tagSelectedName = 'Pesquisa';
+    tabName != 'admVideo' ? this.admVideoSelectVisible = false : this.admVideoSelectVisible = true;
+    tabName != 'admTag' ? this.admTagSelectVisible = false : this.admTagSelectVisible = true;
 
     tabName != 'tag' ? this.tagSelectedVisible = false : this.tagSelectedVisible = true;
     tabName != 'find' ? this.findSelectedVisible = false : this.findSelectedVisible = true;
@@ -289,12 +563,37 @@ export class HomeComponent implements OnInit {
     tabName == 'tag' ? this.tagActiveTag = true : this.tagActiveTag = false;
     tabName == 'find' ? this.findActiveTag = true : this.findActiveTag = false;
 
+    if(tabName == 'admVideo')
+    {
+      this.admVideoSelectedVisible = true;
+      this.admVideoActiveTag = true;
+      this.admTagSelectedVisible = false;
+      this.admTagActiveTag = false;
+      this.tagSelectedName = 'Administração de Vídeos'
+    }
+    else if(tabName == 'admTag')
+    {
+      this.admVideoSelectedVisible = false;
+      this.admVideoActiveTag = false;
+      this.admTagSelectedVisible = true;
+      this.admTagActiveTag = true;
+      this.tagSelectedName = 'Administração de Tags'
+    }
+    else
+    {
+      this.admVideoSelectedVisible = false;
+      this.admVideoActiveTag = false;
+      this.admTagSelectedVisible = false;
+      this.admTagActiveTag = false;
+    }
+
     if(tabName == 'todos')
       this.tagSelectedName = 'Todos Videos';
     if(tabName == 'visto')
       this.tagSelectedName = 'Videos +Vistos ';
     if(tabName == 'recente')
       this.tagSelectedName = 'Videos +Vistos ';
+
   }
 
   onSelectedTag(event){
@@ -316,8 +615,35 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  /*onShowVideo(HASH){
-    this.URL_HASH_VIDEO = 'http://www.youtube.com/embed/' + HASH;
-  }*/
+  onSelectTabAdmin(event){
+    //console.log(event.tab);
+    if(event.tab == 'admVideo')
+    {
+      this.resultadoConsulta = false;
+      this.admVideoSelectedVisible = true;
+      this.admVideoActiveTag = true;
+      this.onSelectTab(event.tab);
+    }
+    else if(event.tab == 'admTag')
+    {
+      this.resultadoConsulta = false;
+      this.admTagSelectedVisible = true;
+      this.admTagActiveTag = true;
+      this.onSelectTab(event.tab);
+    }
+  }
 
+  onVideoAdminApagarSelected(event){
+    this.load = true;
+
+    this.deleteRemoverVideo(event.ID);
+    let index = this.Videos.Registros.indexOf(event.OBJECT);
+    this.Videos.Registros.splice(index, 1);
+
+  }
+
+  onPaste(hashVideo){
+    this.getYoutubeDadosVideo(hashVideo);
+    this.load = true;
+  }
 }

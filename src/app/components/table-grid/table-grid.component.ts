@@ -27,7 +27,7 @@ export class TableGridComponent implements OnInit {
                   ];
   @Input() sort: string = 'firstName';
 
-  @Input() order: any = { col : 'firstName' , asc : true };
+  //@Input() order: any = { col : 'firstName' , asc : true };
 
   @Input() pagination: any = { current : 1, totalRecords : 50, recordPerPage : 4, previous : false, next : false, pagination : true };
 
@@ -42,14 +42,15 @@ export class TableGridComponent implements OnInit {
 
   // FUNCTIONS
   selectedClass(columnName): string {
-    if(columnName === this.order.col)
+  /*  if(columnName === this.order.col)
     { return this.order.asc ? 'sort-true fa fa-sort-amount-asc' : 'sort-false fa fa-sort-amount-desc'; }
     else
-    { return ''; }
+    { return ''; }*/
+    return '';
   }
 
   changeSorting(columnName): void {
-    this.sort = columnName;
+    /*this.sort = columnName;
     if (this.order.col == columnName) {
         this.order.asc = !this.order.asc;
     } else {
@@ -57,10 +58,12 @@ export class TableGridComponent implements OnInit {
       this.order.asc = true;
     }
     this.rows = this.rows; //this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
+    */
   }
 
   convertSorting(): string {
-    return "'[" + (this.order.asc ? '+' : '-') + this.sort + "]'";
+    /*return "'[" + (this.order.asc ? '+' : '-') + this.sort + "]'";*/
+    return '';
   }
 
   getPaginationNumberBegin(): any {
@@ -87,7 +90,7 @@ export class TableGridComponent implements OnInit {
 
   // EVENTS
   ngOnChanges(){
-    this.sort = this.order.col;
+    //this.sort = this.order.col;
    this.rows = this.rows; // this.rows = Order.transform(this.rows,(this.order.asc ? '+' : '-') + this.order.col);
     this.getPaginationNumberBegin();
 

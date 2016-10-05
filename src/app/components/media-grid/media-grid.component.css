@@ -1,0 +1,40 @@
+.fade {
+  position: relative;
+  opacity: 10 !important;
+  height: 4.5em;
+  overflow: hidden;
+}
+.fade:after {
+  content: "";
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 70%;
+  height: 1.2em;
+  background: linear-gradient(to right, rgba(220, 220, 220, 0), rgba(220, 220, 220, 1) 50%);
+}
+
+img{
+    margin-top: 0px;
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    border-radius: 96px;
+}
+
+.media{
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  background-color: rgba(220, 220, 220, 1);
+  border-radius: 96px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.tag-success{
+  background-color: #26A65B;
+}

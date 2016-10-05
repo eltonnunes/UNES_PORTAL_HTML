@@ -11,6 +11,7 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { MenuComponent } from '../../components/menu/menu.component';
 import { CardGridComponent } from '../../components/card-grid/card-grid.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { MediaGridComponent } from '../../components/media-grid/media-grid.component'
 
 import { HomeService } from './home.service';
 
@@ -21,7 +22,8 @@ import { HomeService } from './home.service';
     HeaderComponent,
     MenuComponent,
     CardGridComponent,
-    PaginationComponent
+    PaginationComponent,
+    MediaGridComponent
   ],
   imports: [
     CommonModule,

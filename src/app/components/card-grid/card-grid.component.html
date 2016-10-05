@@ -7,7 +7,12 @@
            src="https://i.ytimg.com/vi/{{card.UNV_TX_HASH}}/hqdefault.jpg?custom=true&amp;w=196&amp;h=110&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=GYxCech-1w2dDG0BZhqs1t4_Fck"
            data-holder-rendered="true"
            style="height: 180px; width: 100%; display: block; cursor:pointer"
-           (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
+           (click)="onVideoSelected({ HASH : card.UNV_TX_HASH,
+                                         ID: card.UNV_ID_VIDEOS,
+                                     TITULO: card.UNV_TX_TITULO,
+                                      TEXTO: card.UNV_TX_DESCRICAO,
+                                     ID_TAG: card.UNT_TAG.UNT_ID_TAG,
+                                   NAME_TAG: card.UNT_TAG.UNT_TX_NOME})">
       <div class="card-block">
         <span
           class="tag tag-success"
@@ -19,14 +24,24 @@
           data-toggle="modal"
           data-target=".bd-example-modal-lg"
           style="cursor:pointer"
-          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
+          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH,
+                                        ID: card.UNV_ID_VIDEOS,
+                                    TITULO: card.UNV_TX_TITULO,
+                                     TEXTO: card.UNV_TX_DESCRICAO,
+                                    ID_TAG: card.UNT_TAG.UNT_ID_TAG,
+                                  NAME_TAG: card.UNT_TAG.UNT_TX_NOME})">
           {{card.UNV_TX_TITULO}}</h6>
         <p
           class="card-text fade"
           data-toggle="modal"
           data-target=".bd-example-modal-lg"
           style="cursor:pointer"
-          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH, ID: card.UNV_ID_VIDEOS, TITULO: card.UNV_TX_TITULO, TEXTO: card.UNV_TX_DESCRICAO})">
+          (click)="onVideoSelected({ HASH : card.UNV_TX_HASH,
+                                        ID: card.UNV_ID_VIDEOS,
+                                    TITULO: card.UNV_TX_TITULO,
+                                     TEXTO: card.UNV_TX_DESCRICAO,
+                                    ID_TAG: card.UNT_TAG.UNT_ID_TAG,
+                                  NAME_TAG: card.UNT_TAG.UNT_TX_NOME})">
           {{card.UNV_TX_DESCRICAO}}</p>
       </div>
     </div>

@@ -1,4 +1,6 @@
-<header [userName]="userName"></header>
+<header [userName]="userName"
+        (selectAdmin)="onSelectTabAdmin($event)"
+        (selectSair)="onSair($event)"></header>
 
 
 
@@ -41,6 +43,12 @@
         </li>
         <li class="nav-item" *ngIf="findSelectedVisible">
           <a [class]="findActiveTag ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#find" (click)="onSelectTab('find')" role="tab">Pesquisa</a>
+        </li>
+        <li class="nav-item" *ngIf="admVideoSelectedVisible">
+          <a [class]="admVideoActiveTag ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#find" (click)="onSelectTab('admVideo')" role="tab">Administração Vídeos</a>
+        </li>
+        <li class="nav-item" *ngIf="admTagSelectedVisible">
+          <a [class]="admTagActiveTag ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#find" (click)="onSelectTab('admVideo')" role="tab">Administração Tag</a>
         </li>
         <li class="nav-item">
           <a [class]="tagActiveTodos ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#todos" (click)="onSelectTab('todos')" role="tab">Todos</a>
@@ -97,7 +105,6 @@
             <strong>Resultado da pesquisa por: </strong> {{busca}}
           </div>
         </div>
-
         <div [class]="findActiveTag ? 'tab-pane active' : 'tab-pane fade'" id="find" role="tabpanel">
             <cardGrid
               [rows]="VideosBusca"
@@ -107,6 +114,83 @@
               (videoSelected)="onVideoSelected($event)"
               (tagSelected)="onTagSelected($event)"></cardGrid>
         </div>
+
+        <div class="col-md-12" *ngIf="admVideoActiveTag || admTagActiveTag">
+
+          <div *ngIf="msgErro" class="alert alert-danger" role="alert" style="margin-top: 15px">
+            <strong>Ops!</strong> Ocorreu um erro ao efetuar a solicitação ao servidor.
+          </div>
+
+          <div *ngIf="msgSucesso" class="alert alert-success" role="alert" style="margin-top: 15px">
+            <strong>Ok!</strong> Solicitação executada com sucesso.
+          </div>
+
+        </div>
+        <div [class]="admVideoActiveTag ? 'tab-pane active' : 'tab-pane fade'" id="find" role="tabpanel">
+
+            <br />
+
+            <div class="col-md-12 breadcrumb">
+                <div class="form-group">
+                  <label for="formGroupExampleInput">HASH da URL do video</label>
+                  <input type="text"
+                         class="form-control form-control-lg"
+                         id="formGroupExampleInput"
+                         placeholder="Clique e Cole aqui!"
+                         name="pasteHash"
+                         [(ngModel)]="pasteHash"
+                         (paste)="onPaste($event.clipboardData.getData('text/plain'))">
+                </div>
+            </div>
+
+
+            <mediaGrid
+            [rows]="Videos"
+            [recordPerPage]="6"
+            [totalRecords]="Videos.TotalDeRegistros"
+            (currentUpdate)="onCurrentUpdateAdminVideo($event)"
+            (videoEditSelected)="onVideoAdminEditSelected($event)"
+            (videoApagarSelected)="onVideoAdminApagarSelected($event)"
+            ></mediaGrid>
+        </div>
+
+        <div [class]="admTagActiveTag ? 'tab-pane active' : 'tab-pane fade'" id="find" role="tabpanel">
+
+                    <br />
+
+                    <div class="row breadcrumb">
+                      <div class="col-lg-4">
+                        <div class="input-group" style="text-align: right; padding-top: 5px; font-size: 20px;">
+                          <label for="exampleInputEmail1">Informe o nome da Tag</label>
+                        </div>
+                      </div>
+                      <div class="col-lg-8">
+                        <div class="input-group">
+
+                        <input type="text"
+                               class="form-control"
+                               id="formGroupExampleInput"
+                               placeholder="Digite aqui!"
+                               name="newTag"
+                               [(ngModel)]="newTag">
+
+                          <span class="input-group-btn">
+                            <button class="btn btn-secondary" type="button">Cadastrar</button>
+                          </span>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!--mediaGrid
+                    [rows]="Videos"
+                    [recordPerPage]="6"
+                    [totalRecords]="Videos.TotalDeRegistros"
+                    (currentUpdate)="onCurrentUpdateAdminVideo($event)"
+                    (videoEditSelected)="onVideoAdminEditSelected($event)"
+                    (videoApagarSelected)="onVideoAdminApagarSelected($event)"
+                    ></mediaGrid>-->
+                </div>
 
         <div class="col-md-12" *ngIf="resultadoConsulta">
           <div class="card card-block">
@@ -138,7 +222,6 @@
 
 <loading [visible]="load" text="Carregando"></loading>
 
-
 <!-- modal -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -164,3 +247,119 @@
     </div>
   </div>
 </div>
+
+<!-- modal edit -->
+<div class="modal fade bd-modal-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalEdit" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Editando Video</h4>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="col-md-5">
+            <img alt="" aria-hidden="true" class="img-rounded img-responsive" style="margin-top: 9px; width: 308px;object-fit: cover;display: block;" width="308" [src]="ADMIN_EDIT_URL_HASH_VIDEO">
+            <input type="hidden" name="ADMIN_EDIT_ID_VIDEO" [(ngModel)]="ADMIN_EDIT_ID_VIDEO">
+          </div>
+          <div class="col-md-7">
+            <div class="form-group">
+              <label for="formGroupExampleInput" class="col-sm-2 col-form-label">Titulo</label>
+              <input name="ADMIN_EDIT_TITULO_VIDEO" [(ngModel)]="ADMIN_EDIT_TITULO_VIDEO" type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input">
+            </div>
+            <div class="form-group">
+              <label for="exampleTextarea" class="col-sm-2 col-form-label">Texto</label>
+              <textarea class="form-control" [(ngModel)]="ADMIN_EDIT_TEXTO_VIDEO" name="ADMIN_EDIT_TEXTO_VIDEO" id="exampleTextarea" rows="3">{{ADMIN_EDIT_TEXTO_VIDEO}}</textarea>
+            </div>
+            <div class="{{selectClassConditionEditTag ? 'form-group': 'form-group has-warning'}}">
+              <label for="formGroupExampleInput3" class="col-sm-2 col-form-label">Tag</label>
+              <select
+                (change)="onChangeEditTag($event.target.value)"
+                id="formGroupExampleInput3"
+                ([ngModel])="ADMIN_EDIT_TAG_ID"
+                class="{{selectClassConditionEditTag ? 'form-control': 'form-control form-control-danger'}}">
+                <option value="noption" disabled> Selecione</option>
+                <option
+                    *ngFor="let tag of Tags.Registros"
+                    [selected]="ADMIN_EDIT_TAG_ID == tag.UntIdTag ? 'selected' : ''"
+                    value="{{tag.UntIdTag}}" >
+                    {{ tag.UntTxNome}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer" style="text-align: right; border-top: none;">
+          <button class="btn btn-default" data-dismiss="modal" type="button" style="margin-top: 15px;">Fechar</button>
+          <button (click)="edit()" data-dismiss="modal" class="btn btn-primary" style="margin-top: 15px; color: white; background-color: #26A65B; border-color: #26A65B;" type="button">Editar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- modal New -->
+  <div *ngIf="isPasting" class="modal fade in" style="display: block; z" tabindex="-1" role="dialog" aria-labelledby="myLargeModalNew" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModalNew()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Novo Video</h4>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="col-md-5">
+            <img alt="" aria-hidden="true" class="img-rounded img-responsive" style="margin-top: 9px; width: 308px;object-fit: cover;display: block;" width="308" [src]="ADMIN_NEW_URL_HASH_VIDEO">
+            <input type="hidden" name="ADMIN_NEW_ID_VIDEO" [(ngModel)]="ADMIN_NEW_ID_VIDEO">
+          </div>
+          <div class="col-md-7">
+            <div class="form-group">
+              <label for="formGroupExampleInput" class="col-sm-2 col-form-label">Titulo</label>
+              <input name="ADMIN_NEW_TITULO_VIDEO" [(ngModel)]="ADMIN_NEW_TITULO_VIDEO" type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input">
+            </div>
+            <div class="form-group">
+              <label for="exampleTextarea" class="col-sm-2 col-form-label">Texto</label>
+              <textarea class="form-control" [(ngModel)]="ADMIN_NEW_TEXTO_VIDEO" name="ADMIN_NEW_TEXTO_VIDEO" id="exampleTextarea" rows="3">{{ADMIN_NEW_TEXTO_VIDEO}}</textarea>
+            </div>
+            <div class="{{selectClassConditionNewTag ? 'form-group': 'form-group has-warning'}}">
+              <label for="formGroupExampleInput3" class="col-sm-2 col-form-label">Tag</label>
+              <select
+                (change)="onChangeNewTag($event.target.value)"
+                id="formGroupExampleInput3"
+                ([ngModel])="ADMIN_NEW_TAG_ID"
+                class="{{selectClassConditionEditTag ? 'form-control': 'form-control form-control-danger'}}">
+                <option value="noption" disabled> Selecione</option>
+                <option
+                    *ngFor="let tag of Tags.Registros"
+                    [selected]="ADMIN_NEW_TAG_ID == tag.UntIdTag ? 'selected' : ''"
+                    value="{{tag.UntIdTag}}" >
+                    {{ tag.UntTxNome}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer" style="text-align: right; border-top: none;">
+          <button (click)="closeModalNew()" class="btn btn-default" data-dismiss="modal" type="button" style="margin-top: 15px;">Fechar</button>
+          <button (click)="salvar()" data-dismiss="modal" class="btn btn-primary" style="margin-top: 15px; color: white; background-color: #26A65B; border-color: #26A65B;" type="button">Cadastrar</button>
+      </div>
+
+    </div>
+  </div>
+  </div>
+  <div *ngIf="isPasting" class="modal-backdrop fade in">
+  </div>
