@@ -223,8 +223,8 @@
 <loading [visible]="load" text="Carregando"></loading>
 
 <!-- modal -->
-<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+<div class="modal fade bd-example-modal-lg" (click)="closeVideo()" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" (click)="closeVideo()">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -333,13 +333,13 @@
               <label for="exampleTextarea" class="col-sm-2 col-form-label">Texto</label>
               <textarea class="form-control" [(ngModel)]="ADMIN_NEW_TEXTO_VIDEO" name="ADMIN_NEW_TEXTO_VIDEO" id="exampleTextarea" rows="3">{{ADMIN_NEW_TEXTO_VIDEO}}</textarea>
             </div>
-            <div class="{{selectClassConditionNewTag ? 'form-group': 'form-group has-warning'}}">
+            <div class="{{!selectClassConditionNewTag ? 'form-group': 'form-group has-danger'}}">
               <label for="formGroupExampleInput3" class="col-sm-2 col-form-label">Tag</label>
               <select
                 (change)="onChangeNewTag($event.target.value)"
                 id="formGroupExampleInput3"
                 ([ngModel])="ADMIN_NEW_TAG_ID"
-                class="{{selectClassConditionEditTag ? 'form-control': 'form-control form-control-danger'}}">
+                class="{{!selectClassConditionNewTag ? 'form-control': 'form-control form-control-danger'}}">
                 <option value="noption" disabled> Selecione</option>
                 <option
                     *ngFor="let tag of Tags.Registros"

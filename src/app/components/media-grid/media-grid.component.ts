@@ -15,6 +15,7 @@ export class MediaGridComponent implements OnInit {
   @Input() next: boolean = false;
   @Input() pagination: boolean = true;
   @Input() totalRows : number = 50;
+  @Input() protocol: string = 'http:';
   info: Boolean = false;
 
   @Output() currentUpdate = new EventEmitter();

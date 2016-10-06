@@ -39,8 +39,9 @@ export class HomeComponent implements OnInit {
   busca: string = '';
   selectedTagId: number = 0;
   pasteHash: string = '';
-  msgTimeout: number = 500;
+  msgTimeout: number = 1000;
   newTag: string = '';
+  protocol: string = '';
 
   ADMIN_EDIT_URL_HASH_VIDEO:SafeUrl;
   ADMIN_EDIT_TITULO_VIDEO: string = '';
@@ -48,7 +49,21 @@ export class HomeComponent implements OnInit {
   ADMIN_EDIT_ID_VIDEO: number = 0;
   ADMIN_EDIT_TAG_NAME: string = '';
   ADMIN_EDIT_TAG_ID: number = 0;
-  ADMIN_EDIT_OBJECT: any;
+  ADMIN_EDIT_OBJECT: any = {
+      "UNV_ID_VIDEOS": 0,
+      "UNV_TX_TITULO": '',
+      "UNV_TX_DESCRICAO": '',
+      "UNV_NR_VIEW": 0,
+      "UNV_NR_LIKE": 0,
+      "UNV_DT_DATA": '',
+      "UNT_ID_TAG": 0,
+      "UNV_TX_HASH": '',
+      "UNT_TAG": {
+        "UNT_ID_TAG": 0,
+        "UNT_TX_NOME": '',
+        "TB_UNIVERSIDADE_VIDEOS": []
+      }
+    };
 
   ADMIN_NEW_HASH_VIDEO:string = '';
   ADMIN_NEW_URL_HASH_VIDEO:SafeUrl;
@@ -57,7 +72,21 @@ export class HomeComponent implements OnInit {
   ADMIN_NEW_ID_VIDEO: number = 0;
   ADMIN_NEW_TAG_NAME: string = '';
   ADMIN_NEW_TAG_ID: number = 0;
-  ADMIN_NEW_OBJECT: any;
+  ADMIN_NEW_OBJECT: any = {
+      "UNV_ID_VIDEOS": 0,
+      "UNV_TX_TITULO": '',
+      "UNV_TX_DESCRICAO": '',
+      "UNV_NR_VIEW": 0,
+      "UNV_NR_LIKE": 0,
+      "UNV_DT_DATA": '',
+      "UNT_ID_TAG": 0,
+      "UNV_TX_HASH": '',
+      "UNT_TAG": {
+        "UNT_ID_TAG": 0,
+        "UNT_TX_NOME": '',
+        "TB_UNIVERSIDADE_VIDEOS": []
+      }
+    };
 
   tagActiveTodos: Boolean = true;
   tagActiveVisto: Boolean = false;
@@ -70,7 +99,7 @@ export class HomeComponent implements OnInit {
   admTagSelectedVisible: Boolean = false;
 
   selectClassConditionEditTag: Boolean = true;
-  selectClassConditionNewTag: Boolean = true;
+  selectClassConditionNewTag: Boolean = false;
   isPasting: Boolean = false;
   msgSucesso: Boolean = false;
   msgErro: Boolean = false;
@@ -96,11 +125,13 @@ export class HomeComponent implements OnInit {
     this.tagSelectedName = 'Todos Videos'
 
 
+    this.getTagsMenu();
+    this.getVideos(1);
+    this.getVideosMaisVistos(1);
+    this.getVideosMaisRecentes(1);
 
     this.ResetShowVideo();
-
-
-
+    this.protocol = window.location.protocol;
 
 
   }
@@ -132,7 +163,8 @@ export class HomeComponent implements OnInit {
   }
 
   ResetShowVideo(){
-        this.URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl('http://www.youtube.com/embed/000');//fb3EYYWKmQA?rel=0');
+        let URL = this.protocol + '//www.youtube.com/embed/000';
+        this.URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(URL);//fb3EYYWKmQA?rel=0');
         this.TITULO_VIDEO = '';//'Quer saber quem é a SERVELOJA? o que fazemos?';
         this.TEXTO_VIDEO = '';//'A Serveloja é uma empresa amiga do Empreendedor e propõe facilitar sua vida com soluções que vão além de aceitar cartões de crédito e débito, saiba tudo sobre nós e não vai se arrepender!';
         this.ID_VIDEO = 0;
@@ -172,36 +204,53 @@ export class HomeComponent implements OnInit {
       }
 
     }
+    else
+    {
+      this.load = false;
+    }
 
   }
 
   salvar(){
-    this.isPasting = false;
-    this.load = true;
     this.pasteHash = '';
 
-    let VideoObject: any = {
-      UNV_ID_VIDEOS: -1,
-      UNV_TX_TITULO: this.ADMIN_NEW_TITULO_VIDEO,
-      UNV_TX_DESCRICAO: this.ADMIN_NEW_TEXTO_VIDEO,
-      UNV_NR_VIEW: 0,
-      UNV_NR_LIKE: 0,
-      UNV_DT_DATA: new Date(),
-      UNT_ID_TAG: this.ADMIN_NEW_TAG_ID,
-      UNV_TX_HASH: this.ADMIN_NEW_HASH_VIDEO
-    };
+    if(this.ADMIN_NEW_TAG_ID != 0){
+      this.selectClassConditionNewTag = false;
+      this.isPasting = false;
+      this.load = true;
+      this.pasteHash = '';
 
-    this.ADMIN_NEW_OBJECT = this.Videos.Registros[0];
+      let VideoObject: any = {
+        UNV_ID_VIDEOS: -1,
+        UNV_TX_TITULO: this.ADMIN_NEW_TITULO_VIDEO,
+        UNV_TX_DESCRICAO: this.ADMIN_NEW_TEXTO_VIDEO,
+        UNV_NR_VIEW: 0,
+        UNV_NR_LIKE: 0,
+        UNV_DT_DATA: new Date(),
+        UNT_ID_TAG: this.ADMIN_NEW_TAG_ID,
+        UNV_TX_HASH: this.ADMIN_NEW_HASH_VIDEO
+      };
 
-    this.ADMIN_NEW_OBJECT.UNV_TX_TITULO = this.ADMIN_NEW_TITULO_VIDEO;
-    this.ADMIN_NEW_OBJECT.UNV_TX_DESCRICAO = this.ADMIN_NEW_TEXTO_VIDEO;
-    this.ADMIN_NEW_OBJECT.UNV_TX_HASH = this.ADMIN_NEW_HASH_VIDEO;
+      //if( this.Videos.Registros != null)
+        //this.ADMIN_NEW_OBJECT = this.Videos.Registros[0];
 
-    this.postAdicionaVideo(VideoObject);
+        this.ADMIN_NEW_OBJECT.UNV_TX_TITULO = this.ADMIN_NEW_TITULO_VIDEO;
+        this.ADMIN_NEW_OBJECT.UNV_TX_DESCRICAO = this.ADMIN_NEW_TEXTO_VIDEO;
+        this.ADMIN_NEW_OBJECT.UNV_TX_HASH = this.ADMIN_NEW_HASH_VIDEO;
+
+        this.postAdicionaVideo(VideoObject);
+    }
+    else
+    {
+      this.selectClassConditionNewTag = true;
+      this.ADMIN_NEW_TAG_ID = 0;
+    }
   }
 
   closeModalNew(){
+    this.pasteHash = '';
     this.isPasting = false;
+    this.ADMIN_NEW_TAG_ID = 0;
   }
 
 
@@ -372,15 +421,13 @@ export class HomeComponent implements OnInit {
     this.homeService.YoutubeBuscarDadosVideo(hashVideo)
                       .subscribe(
                           data => {
-                            console.log(data);
                             var videos = <any>data;
-                            console.log(videos.items[0]);
                             if(videos.items[0] != undefined)
                             {
                               this.load = false;
                               this.isPasting = true;
 
-                              let url:string = 'https://i.ytimg.com/vi/' + hashVideo + '/hqdefault.jpg';
+                              let url:string = this.protocol + '//i.ytimg.com/vi/' + hashVideo + '/hqdefault.jpg';
                               this.ADMIN_NEW_HASH_VIDEO = hashVideo;
                               this.ADMIN_NEW_URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
                               this.ADMIN_NEW_TITULO_VIDEO = videos.items[0].snippet.title;
@@ -405,15 +452,17 @@ export class HomeComponent implements OnInit {
           retorno => {
                         returnOperation = retorno;
                         this.load = false;
+                        this.msgSucesso = true;
                         setTimeout(() => {
-                          this.msgSucesso = true;
+                          this.msgSucesso = false;
                         }, this.msgTimeout);
                       },
           err => {
                     console.log(err);
                     this.load = false;
+                    this.msgErro = true;
                     setTimeout(() => {
-                      this.msgErro = true;
+                      this.msgErro = false;
                     }, this.msgTimeout);
                  });
   }
@@ -422,16 +471,18 @@ export class HomeComponent implements OnInit {
     this.homeService.RemoverVideo(id).subscribe(
         retorno => {
                   this.load = false;
+                  this.msgSucesso = true;
                   setTimeout(() => {
-                    this.msgSucesso = true;
+                    this.msgSucesso = false;
                   }, this.msgTimeout);
                  /*console.log(retorno)*/
                },
         err => {
                   console.log(err);
                   this.load = false;
+                  this.msgErro = true;
                   setTimeout(() => {
-                    this.msgErro = true;
+                    this.msgErro = false;
                   }, this.msgTimeout);
                });
   }
@@ -449,14 +500,19 @@ export class HomeComponent implements OnInit {
                     this.ADMIN_NEW_OBJECT.UNT_ID_TAG = this.ADMIN_NEW_TAG_ID;
                     this.ADMIN_NEW_OBJECT.UNT_TAG = this.getTagObject(this.ADMIN_NEW_TAG_ID);
                     this.Videos.Registros.push(this.ADMIN_NEW_OBJECT);
+
+                    this.ADMIN_NEW_TAG_ID = 0;
+
+                    this.msgSucesso = true;
                     setTimeout(() => {
-                      this.msgSucesso = true;
+                      this.msgSucesso = false;
                     }, this.msgTimeout);
                   },
         err => {
                   console.log(err);
+                  this.msgErro = true;
                   setTimeout(() => {
-                    this.msgErro = true;
+                    this.msgErro = false;
                   }, this.msgTimeout);
                });
   }
@@ -511,7 +567,7 @@ export class HomeComponent implements OnInit {
         retorno => { returnOperation = retorno /*console.log(retorno)*/ },
         err => { console.log(err) });
 
-    let url:string = 'http://www.youtube.com/embed/' + event.HASH;
+    let url:string = this.protocol + '//www.youtube.com/embed/' + event.HASH;
     this.URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.TITULO_VIDEO = event.TITULO;
     this.TEXTO_VIDEO = event.TEXTO;
@@ -519,7 +575,7 @@ export class HomeComponent implements OnInit {
   }
 
   onVideoAdminEditSelected(event){
-    let url:string = 'https://i.ytimg.com/vi/' + event.HASH + '/hqdefault.jpg';
+    let url:string = this.protocol + '//i.ytimg.com/vi/' + event.HASH + '/hqdefault.jpg';
     this.ADMIN_EDIT_URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.ADMIN_EDIT_TITULO_VIDEO = event.TITULO;
     this.ADMIN_EDIT_TEXTO_VIDEO = event.TEXTO;
@@ -643,6 +699,7 @@ export class HomeComponent implements OnInit {
   }
 
   onPaste(hashVideo){
+    this.ADMIN_NEW_TAG_ID = 0;
     this.getYoutubeDadosVideo(hashVideo);
     this.load = true;
   }
