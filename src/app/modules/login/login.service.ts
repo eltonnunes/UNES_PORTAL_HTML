@@ -20,10 +20,15 @@ import { GlobalVariable }   from '../../globals'
 export class LoginService {
 
 
-    constructor (private http: Http, private router: Router) {}
-
     // URL web API Autenticação
     private API_URL: string =  GlobalVariable.BASE_API_URL + 'TbUsuarioAlias';
+    private TOKEN: string =  localStorage.getItem('auth_token');
+
+    constructor (private http: Http, private router: Router) {
+      //if (localStorage.getItem('auth_token') != null)
+      //  this.ValidateToken();
+    }
+
 
 
     // Autenticar no Servidor
@@ -39,7 +44,7 @@ export class LoginService {
 
     // Valida se o CPF / CNPJ existe em nosso sistema.
     public getValidateCpfCnpj(CpfCnpj) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/0986767HGHG'
                                                         + '/0/100/1/0/0?101=' + CpfCnpj;
 
         return this.http.get(urlapi)
@@ -49,9 +54,24 @@ export class LoginService {
     }
 
 
+    // Valida se o Token Informado é válido
+    public getValidateToken() : Observable<Retorno>{
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'TbUniversidadeTokenApi/'
+                                                        + this.TOKEN
+                                                        + '/2/100/0/0/1';
+
+      if(this.TOKEN != null)
+      {
+        return this.http.get(urlapi)
+                        .map((res:Response) => res.json())
+                        .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+      }
+
+    }
+
     // Valida se o Código Informado é válido
     public getValidateCodigo(Codigo) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + this.TOKEN
                                                         + '/0/100/1/0/0?100=' + Codigo;
 
         return this.http.get(urlapi)
@@ -62,7 +82,7 @@ export class LoginService {
 
     // Recupera Senha
     public getAlteraSenha(Codigo, CpfCnpj) : Observable<Retorno>{
-      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + GlobalVariable.TOKEN
+      let urlapi: string =  GlobalVariable.BASE_API_URL + 'util/' + this.TOKEN
                                                         + '/0/100/1/0/0?100=' + Codigo + '&101=' + CpfCnpj;
 
         return this.http.get(urlapi)
@@ -86,8 +106,30 @@ export class LoginService {
     // Efetua Logout
     public Logout() {
             localStorage.clear();
-            sessionStorage.clear();
-            sessionStorage.setItem('loggedIn', 'false');
+            localStorage.clear();
+            localStorage.setItem('loggedIn', 'false');
             this.router.navigate(['/login']);
+    }
+
+    public ValidateToken(){
+      this.getValidateToken()
+                        .subscribe(
+                            retorno => {
+                              if( retorno.Registros.length == 0 )
+                              {
+                                this.Logout();
+                              }
+                            },
+                            err => {
+                                console.log(err);
+                                this.Logout();
+                            });
+    }
+
+
+    public Validate(token){
+      let validTOken: Boolean = <Boolean>token;
+      if(!token)
+        this.Logout();
     }
 }

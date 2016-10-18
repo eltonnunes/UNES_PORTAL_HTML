@@ -3,6 +3,7 @@ export class Retorno {
                 public Registros : any[],
                 public TotalDeRegistros : number,
                 public ItensPorPagina : number,
-                public Totais : number
+                public Totais : number,
+                public Token : Boolean
               ) { }
 }

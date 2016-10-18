@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   errorSolicitarSenha   : Boolean = false;
   errorPhone            : Boolean = false;
   errorLogin            : Boolean = false;
+  loginSemAcesso        : Boolean = false;
   login                 : Boolean = true;
   phone                 : Boolean = true;
   loggedIn              : Boolean = false;
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit {
   validaConditionCnpjCpf: Boolean = true;
   classConditionCnpjCpf : Boolean = true;
   conditionCnpjCpf      : Boolean = true;
+  conditionEmail        : Boolean = false;
   validaConditionCodigo : Boolean = true;
   classConditionCodigo : Boolean = true;
   conditionAlteraSenha  : Boolean = true;
@@ -41,7 +43,7 @@ export class LoginComponent implements OnInit {
   @Input() senha        : string = '';
   @Input() codigo        : string = '';
   @Input() cpfcnpj      : string = '';
-  retorno               : Retorno = new Retorno(Object[0],0,0,0);
+  retorno               : Retorno = new Retorno(Object[0],0,0,0, false);
 
   constructor(private loginService: LoginService, private router: Router) {
     if (localStorage.getItem('auth_token') != null)
@@ -95,7 +97,10 @@ export class LoginComponent implements OnInit {
       this.Autenticar();
   }
 
-
+  eventHandlerKeyPressSolicitarSenha(event) {
+    if(event.keyCode == 13)
+      this.SolicitarSenha();
+  }
 
   Autenticar(){
     this.login = false;
@@ -105,26 +110,36 @@ export class LoginComponent implements OnInit {
                             if( retorno.Registros != null)
                             {
                               this.retorno = retorno;
-                              let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
+                              if(this.retorno.Registros[0] != false)
+                              {
+                                let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
 
-                              localStorage.setItem('auth_token', this.retorno.Registros[0].UTA_TX_TOKEN);
-                              localStorage.setItem('auth_validate', this.retorno.Registros[0].UTA_DT_VALIDADE);
-                              sessionStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
-                              sessionStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
+                                localStorage.setItem('auth_token', this.retorno.Registros[0].UTA_TX_TOKEN);
+                                localStorage.setItem('auth_validate', this.retorno.Registros[0].UTA_DT_VALIDADE);
+                                localStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
+                                localStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
 
-                              this.login = true;
-                              this.loggedIn = true;
+                                this.login = true;
+                                this.loggedIn = true;
+                                this.loginSemAcesso = false;
 
-                              this.router.navigate(['/home']);
+                                this.router.navigate(['/home']);
+                              }else{
+                                this.login = true;
+                                this.errorLogin  = true;
+                                this.loginSemAcesso = true;
+                              }
                             }
                             else{
                               this.login = true;
                               this.errorLogin  = true;
+                              this.loginSemAcesso = false;
                             }
                           },
                           err => {
                              this.login = true;
                              this.errorLogin  = true;
+                             this.loginSemAcesso = false;
                               console.log(err);
                           });
 
@@ -135,9 +150,9 @@ export class LoginComponent implements OnInit {
 
   Logout() {
         localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear();
         this.loggedIn = false;
-        //sessionStorage.setItem('loggedIn', 'false');
+        //localStorage.setItem('loggedIn', 'false');
         //this.router.navigate(['/login']);
   };
 
@@ -149,20 +164,32 @@ export class LoginComponent implements OnInit {
                       .subscribe(
                           retorno => {
                             this.retorno = retorno;
-                            let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
 
-                            if(this.retorno.Registros.length == 1)
+                            if(this.retorno.Token)
                             {
-                              this.txtConditionAlteraSenha = false;
-                              this.conditionAlteraSenha = true;
-                              this.classConditionAlteraSenha = false;
-                              this.username = localStorage.getItem('nameVerificado');
+                              let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
+
+                              if(this.retorno.Registros.length == 1)
+                              {
+                                this.conditionEmail = false;
+                                this.txtConditionAlteraSenha = false;
+                                this.conditionAlteraSenha = true;
+                                this.classConditionAlteraSenha = false;
+                                this.username = localStorage.getItem('nameVerificado');
+                              }
+                              else
+                              {
+                                this.conditionEmail = false;
+                                this.txtConditionAlteraSenha = true;
+                                this.conditionAlteraSenha = true;
+                                this.classConditionAlteraSenha = false;
+                              }
                             }
                             else
                             {
-                              this.txtConditionAlteraSenha = true;
                               this.conditionAlteraSenha = true;
-                              this.classConditionAlteraSenha = false;
+                              this.classConditionAlteraSenha = true;
+                              this.conditionEmail = true;
                             }
                           },
                           err => {
@@ -261,19 +288,29 @@ export class LoginComponent implements OnInit {
                       .subscribe(
                           retorno => {
                             this.retorno = retorno;
-                            let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
-                            if(this.retorno.Registros.length == 1)
-                            {
+                            console.log(this.retorno.Token);
+                            //let verify: Boolean = <Boolean>this.retorno.Token;
+                            //if(verify){
+                              if(this.retorno.Registros.length == 1)
+                              {
+                                let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
+                                this.conditionCnpjCpf = true;
+                                this.classConditionCnpjCpf = true;
+                                localStorage.setItem('CpfCnpjVerificado', CpfCnpj);
+                                localStorage.setItem('nameVerificado', this.retorno.Registros[0].PES_TX_NOME);
+                                this.conditionEmail = false;
+                              }
+                              else
+                              {
+                                this.conditionEmail = false;
+                                this.conditionCnpjCpf = false;
+                                this.classConditionCnpjCpf = false;
+                              }
+                            /*}else{
+                              this.conditionEmail = true;
                               this.conditionCnpjCpf = true;
                               this.classConditionCnpjCpf = true;
-                              localStorage.setItem('CpfCnpjVerificado', CpfCnpj);
-                              localStorage.setItem('nameVerificado', this.retorno.Registros[0].PES_TX_NOME);
-                            }
-                            else
-                            {
-                              this.conditionCnpjCpf = false;
-                              this.classConditionCnpjCpf = false;
-                            }
+                            }*/
                           },
                           err => {
                               console.log(err);
@@ -285,19 +322,26 @@ export class LoginComponent implements OnInit {
                       .subscribe(
                           retorno => {
                             this.retorno = retorno;
-                            let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
+                            //if(retorno.Token){
+                              let dadosUser : Usuarioalias = <Usuarioalias> this.retorno.Registros[0];
 
-                            if(this.retorno.Registros.length == 1)
-                            {
-                              this.validaConditionCodigo = true;
-                              this.classConditionCodigo = true;
-                              localStorage.setItem('userVerificado', this.retorno.Registros[0].USU_TX_USUARIO);
-                            }
-                            else
-                            {
-                              this.validaConditionCodigo = false;
-                              this.classConditionCodigo = false;
-                            }
+                              if(this.retorno.Registros.length == 1)
+                              {
+                                this.conditionEmail = false;
+                                this.validaConditionCodigo = true;
+                                this.classConditionCodigo = true;
+                                localStorage.setItem('userVerificado', this.retorno.Registros[0].USU_TX_USUARIO);
+                              }
+                              else
+                              {
+                                this.conditionEmail = false;
+                                this.validaConditionCodigo = false;
+                                this.classConditionCodigo = false;
+                              }
+                            //}
+                            //else{
+                            //  this.conditionEmail = true;
+                            //}
                           },
                           err => {
                               console.log(err);

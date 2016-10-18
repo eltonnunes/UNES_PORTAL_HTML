@@ -13,6 +13,7 @@ export class HomeService {
 
   // URL to web API
   private API_URL_TAGS: string =  GlobalVariable.BASE_API_URL + 'TbUniversidadeTag/';
+  private API_URL_PERFIS: string =  GlobalVariable.BASE_API_URL + 'TbUniversidadePerfil/';
   private API_URL_VIDEOS: string =  GlobalVariable.BASE_API_URL + 'TbUniversidadeVideos/';
 
   constructor(private http: Http) { }
@@ -26,9 +27,17 @@ export class HomeService {
                     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
 
+  public ListaPerfis(){
+    let urlapi: string =  this.API_URL_PERFIS + localStorage.getItem('auth_token')
+                                            + '/1/100/0/0/1'; //Valores fixos para /Coleção/CampoOrdenação/Ordenação/ItensPorPagina/PaginaAtual
+    return this.http.get(urlapi)
+                    .map((res:Response) => res.json())
+                    .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
   public ListaVideos(pg){
     let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token')
-                                              + '/0/100/1/6/' + pg;
+                                              + '/1/100/1/6/' + pg;
     return this.http.get(urlapi)
                     .map((res:Response) => res.json())
                     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
@@ -44,7 +53,7 @@ export class HomeService {
 
   public ListaVideosMaisRecentes(pg){
     let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token')
-                                              + '/0/105/1/6/' + pg;
+                                              + '/1/105/1/6/' + pg;
     return this.http.get(urlapi)
                     .map((res:Response) => res.json())
                     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
@@ -62,6 +71,16 @@ export class HomeService {
     let queryString = '?102=' + search + '%&101=' + search + '%';
     let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token')
                                               + '/0/105/1/6/' + pg + '/' + queryString;
+    return this.http.get(urlapi)
+                    .map((res:Response) => res.json())
+                    .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+
+  public ListaAdmin(){
+    let URL:string  = GlobalVariable.BASE_API_URL + 'TbUniversidadeTokenApi/';
+    let urlapi: string =  URL + localStorage.getItem('auth_token')
+                                              + '/3/100/0/0/1';
     return this.http.get(urlapi)
                     .map((res:Response) => res.json())
                     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
@@ -101,6 +120,8 @@ export class HomeService {
                         .map((res:Response) => res.json())
                         .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
+
+
 
   public CadastrarVideo(body: any): Observable<number> {
     let urlapi: string =  this.API_URL_VIDEOS + localStorage.getItem('auth_token');

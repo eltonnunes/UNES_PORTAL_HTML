@@ -1,6 +1,7 @@
 <header [userName]="userName"
         (selectAdmin)="onSelectTabAdmin($event)"
-        (selectSair)="onSair($event)"></header>
+        (selectSair)="onSair($event)"
+        [visible]="Admin"></header>
 
 
 
@@ -211,7 +212,7 @@
         <div _ngcontent-prs-3="" align="center">
           <div _ngcontent-prs-3="" class="row small-10 medium-7 large-5 large-centered small-centered medium-centered">
             <div _ngcontent-prs-3="" class="large-10 large-centered medium-10 medium-centered column" style="font-size: 0.8em; text-align: center !important; margin-bottom: 1.5rem; margin-top: 3.5rem;">
-              Copyright © 2016 Serveloja. Todos os direitos reservados.<br /> Versão 1.0.0
+              Copyright © 2016 Serveloja. Todos os direitos reservados.<br /> Versão {{version}}
             </div>
           </div>
         </div>
@@ -222,7 +223,7 @@
 
 <loading [visible]="load" text="Carregando"></loading>
 
-<!-- modal -->
+<!-- modal View-->
 <div class="modal fade bd-example-modal-lg" (click)="closeVideo()" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" (click)="closeVideo()">
     <div class="modal-content">
@@ -249,7 +250,7 @@
 </div>
 
 <!-- modal edit -->
-<div class="modal fade bd-modal-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalEdit" aria-hidden="true">
+<div class="modal fade bd-modal-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalEdit" aria-hidden="true" style=" overflow-x: hidden; overflow-y: auto;">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
 
@@ -292,13 +293,46 @@
                 </option>
               </select>
             </div>
+            <div class="form-group has-danger" class="{{!selectClassConditionEditPerfil ? 'form-group': 'form-group has-danger'}}">
+              <label *ngIf="!selectClassConditionEditPerfil" for="formGroupExampleInput3" class="col-sm-12 col-form-label form-control-danger">Selecione os Perfis</label>
+              <label *ngIf="selectClassConditionEditPerfil" for="formGroupExampleInput3" class="col-sm-12 col-form-label form-control-danger"
+                style="border: solid; border-width: 1px; border-color: #d9534f; margin-top: 9px; margin-bottom: 3px; border-radius: .3rem;"
+              >Selecione os Perfis</label>
+
+                <div class="list-group">
+                  <a>
+                    <div class="btn-group btn-group-sm btn-block">
+                      <button type="button" class="actions-btn bs-select-all btn btn-default" style="margin: 2px; margin-left: 3px;"
+                              (click)="onSelectPerfilEditTodos()">
+                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                        Todos
+                      </button>
+                      <button type="button" class="actions-btn bs-deselect-all btn btn-default" style="margin: 2px;"
+                      (click)="onSelectPerfilEditLimpar()">
+                        <i class="fa fa-square-o" aria-hidden="true"></i>
+                        Limpar
+                      </button>
+                    </div>
+                  </a>
+                  <a *ngFor="let perfil of Perfis.Registros"
+                      class="list-group-item list-group-item-action"
+                      (click)="onSelectPerfilEdit(perfil.UNP_ID_PERFIL)">
+
+                    <i *ngIf="onCheckPerfilEdit(perfil.UNP_ID_PERFIL)" class="fa fa-check-square-o" aria-hidden="true" id="{{perfil.UNP_ID_PERFIL}}"></i>
+                    <i *ngIf="!onCheckPerfilEdit(perfil.UNP_ID_PERFIL)" class="fa fa-square-o" aria-hidden="true" id="{{perfil.UNP_ID_PERFIL}}"></i>
+                    {{perfil.UNP_TX_NOME}}
+                  </a>
+                </div>
+
+            </div>
           </div>
         </form>
       </div>
 
       <div class="modal-footer" style="text-align: right; border-top: none;">
-          <button class="btn btn-default" data-dismiss="modal" type="button" style="margin-top: 15px;">Fechar</button>
-          <button (click)="edit()" data-dismiss="modal" class="btn btn-primary" style="margin-top: 15px; color: white; background-color: #26A65B; border-color: #26A65B;" type="button">Editar</button>
+          <button (click)="sairEdit()" class="btn btn-default" data-dismiss="modal" type="button" style="margin-top: 15px;">Fechar</button>
+          <button *ngIf="!selectClassConditionEditPerfil" (click)="edit()" data-dismiss="modal" class="btn btn-primary" style="margin-top: 15px; color: white; background-color: #26A65B; border-color: #26A65B;" type="button">Editar</button>
+          <button *ngIf="selectClassConditionEditPerfil" class="btn btn-primary" style="margin-top: 15px; color: white; background-color: #26A65B; border-color: #26A65B;" type="button">Editar</button>
       </div>
 
     </div>
@@ -306,7 +340,7 @@
 </div>
 
 <!-- modal New -->
-  <div *ngIf="isPasting" class="modal fade in" style="display: block; z" tabindex="-1" role="dialog" aria-labelledby="myLargeModalNew" aria-hidden="false">
+  <div *ngIf="isPasting" class="modal fade in" style="display: block; overflow-x: hidden; overflow-y: auto;" tabindex="-1" role="dialog" aria-labelledby="myLargeModalNew3" aria-hidden="false">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
 
@@ -348,6 +382,38 @@
                     {{ tag.UntTxNome}}
                 </option>
               </select>
+            </div>
+            <div class="form-group has-danger" class="{{!selectClassConditionNewPerfil ? 'form-group': 'form-group has-danger'}}">
+              <label *ngIf="!selectClassConditionNewPerfil" for="formGroupExampleInput3" class="col-sm-12 col-form-label form-control-danger">Selecione os Perfis</label>
+              <label *ngIf="selectClassConditionNewPerfil" for="formGroupExampleInput3" class="col-sm-12 col-form-label form-control-danger"
+                style="border: solid; border-width: 1px; border-color: #d9534f; margin-top: 9px; margin-bottom: 3px; border-radius: .3rem;"
+              >Selecione os Perfis</label>
+
+              <div class="list-group">
+                <a>
+                  <div class="btn-group btn-group-sm btn-block">
+                    <button type="button" class="actions-btn bs-select-all btn btn-default" style="margin: 2px; margin-left: 3px;"
+                            (click)="onSelectPerfilTodos()">
+                      <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                      Todos
+                    </button>
+                    <button type="button" class="actions-btn bs-deselect-all btn btn-default" style="margin: 2px;"
+                    (click)="onSelectPerfilLimpar()">
+                      <i class="fa fa-square-o" aria-hidden="true"></i>
+                      Limpar
+                    </button>
+                  </div>
+                </a>
+                <a *ngFor="let perfil of Perfis.Registros"
+                    class="list-group-item list-group-item-action"
+                    (click)="onSelectPerfil(perfil.UNP_ID_PERFIL)">
+
+                  <i *ngIf="onCheckPerfil(perfil.UNP_ID_PERFIL)" class="fa fa-check-square-o" aria-hidden="true" id="{{perfil.UNP_ID_PERFIL}}"></i>
+                  <i *ngIf="!onCheckPerfil(perfil.UNP_ID_PERFIL)" class="fa fa-square-o" aria-hidden="true" id="{{perfil.UNP_ID_PERFIL}}"></i>
+                  {{perfil.UNP_TX_NOME}}
+                </a>
+              </div>
+
             </div>
           </div>
         </form>

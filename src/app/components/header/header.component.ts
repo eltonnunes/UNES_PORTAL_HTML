@@ -8,8 +8,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class HeaderComponent implements OnInit {
 
   @Input() userName: string = 'User Name';
+  @Input('visible') adminHide: Boolean = false;
   @Output('selectAdmin') admin = new EventEmitter();
   @Output('selectSair') sair = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {

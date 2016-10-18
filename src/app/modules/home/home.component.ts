@@ -13,7 +13,7 @@ import {
 import { LoginService } from '../login/login.service';
 import { HomeService } from './home.service';
 import { Retorno } from '../../models/retorno';
-
+import { GlobalVariable }   from '../../globals'
 
 @Component({
   selector: 'app-home',
@@ -22,6 +22,7 @@ import { Retorno } from '../../models/retorno';
 })
 export class HomeComponent implements OnInit {
 
+  version: string = GlobalVariable.VERSION;
   @Input() search: string = '';
   userName: string = '';
   load: Boolean = true;
@@ -31,6 +32,7 @@ export class HomeComponent implements OnInit {
   admVideoSelectVisible: Boolean = false;
   admTagSelectVisible: Boolean = false;
   tagSelectedName: string = '';
+  Admin: Boolean = false;
   resultadoConsulta: Boolean = false;
   URL_HASH_VIDEO:SafeUrl;
   TITULO_VIDEO: string = '';
@@ -64,6 +66,7 @@ export class HomeComponent implements OnInit {
         "TB_UNIVERSIDADE_VIDEOS": []
       }
     };
+  ADMIN_EDIT_PERFIS: any = [];
 
   ADMIN_NEW_HASH_VIDEO:string = '';
   ADMIN_NEW_URL_HASH_VIDEO:SafeUrl;
@@ -85,8 +88,11 @@ export class HomeComponent implements OnInit {
         "UNT_ID_TAG": 0,
         "UNT_TX_NOME": '',
         "TB_UNIVERSIDADE_VIDEOS": []
-      }
+      },
+      "PERFIS":[]
     };
+  ADMIN_NEW_PERFIS: any = [];
+
 
   tagActiveTodos: Boolean = true;
   tagActiveVisto: Boolean = false;
@@ -100,16 +106,22 @@ export class HomeComponent implements OnInit {
 
   selectClassConditionEditTag: Boolean = true;
   selectClassConditionNewTag: Boolean = false;
+  selectClassConditionNewPerfil: Boolean = false;
+  selectClassConditionEditPerfil: Boolean = false;
+
   isPasting: Boolean = false;
   msgSucesso: Boolean = false;
   msgErro: Boolean = false;
 
-  Tags: Retorno = new Retorno(Object[0],0,0,0);
-  Videos: Retorno = new Retorno(Object[0],0,0,0);
-  VideosMaisVistos: Retorno = new Retorno(Object[0],0,0,0);
-  VideosMaisRecentes: Retorno = new Retorno(Object[0],0,0,0);
-  VideosTags: Retorno = new Retorno(Object[0],0,0,0);
-  VideosBusca: Retorno = new Retorno(Object[0],0,0,0);
+  Tags: Retorno = new Retorno(Object[0],0,0,0, false);
+  Perfis: Retorno = new Retorno(Object[0],0,0,0, false);
+  Videos: Retorno = new Retorno(Object[0],0,0,0, false);
+  VideosMaisVistos: Retorno = new Retorno(Object[0],0,0,0, false);
+  VideosMaisRecentes: Retorno = new Retorno(Object[0],0,0,0, false);
+  VideosTags: Retorno = new Retorno(Object[0],0,0,0, false);
+  VideosBusca: Retorno = new Retorno(Object[0],0,0,0, false);
+
+
 
   constructor(
               private loginService: LoginService,
@@ -118,14 +130,16 @@ export class HomeComponent implements OnInit {
               private sanitizer   : DomSanitizer
             ) {
 
-    if (localStorage.getItem('auth_token') == null)
-        this.loginService.Logout();
 
-    this.userName = sessionStorage.getItem('nome');
+
+
+    this.resultadoConsulta = false;
+    this.userName = localStorage.getItem('nome');
     this.tagSelectedName = 'Todos Videos'
 
 
     this.getTagsMenu();
+    this.getPerfis();
     this.getVideos(1);
     this.getVideosMaisVistos(1);
     this.getVideosMaisRecentes(1);
@@ -133,12 +147,15 @@ export class HomeComponent implements OnInit {
     this.ResetShowVideo();
     this.protocol = window.location.protocol;
 
+    //this.resultadoConsulta = false;
+    //console.log(this.resultadoConsulta);
 
   }
 
   ngOnInit() {
-
-
+    this.getAdmin();
+    //this.resultadoConsulta = false;
+    ////console.log(this.resultadoConsulta);
     //this.load = false;
     /*console.log(this.Tags);*/
   }
@@ -149,7 +166,7 @@ export class HomeComponent implements OnInit {
   }
 
   find(){
-    this.VideosBusca = new Retorno(Object[0],0,0,0);
+    this.VideosBusca = new Retorno(Object[0],0,0,0, false);
     if(this.busca != '')
     {
       this.load = true;
@@ -172,6 +189,8 @@ export class HomeComponent implements OnInit {
 
   edit(){
     this.load = true;
+    this.loginService.ValidateToken();
+
     let alteracoes: Boolean = false;
 
     if( this.ADMIN_EDIT_TITULO_VIDEO != this.ADMIN_EDIT_OBJECT.UNV_TX_TITULO)
@@ -193,9 +212,21 @@ export class HomeComponent implements OnInit {
       this.ADMIN_EDIT_OBJECT.UNT_TAG = this.getTagObject(this.ADMIN_EDIT_TAG_ID);
     }
 
+    if( (this.ADMIN_EDIT_PERFIS != this.ADMIN_EDIT_OBJECT.PERFIS) && (this.ADMIN_EDIT_PERFIS.length > 0) )
+      alteracoes = true;
+    else
+      alteracoes = false;
+
+
     if(alteracoes){
 
-      this.putAlterarVideo();
+      let perfis: any = [];
+      for (let i = 0; i < this.Perfis.Registros.length; i++) {
+        if(this.ADMIN_EDIT_PERFIS.indexOf(this.Perfis.Registros[i].UNP_ID_PERFIL) != -1)
+          perfis.push( { UNV_ID_VIDEOS: -1, UNP_ID_PERFIL: this.Perfis.Registros[i].UNP_ID_PERFIL } );
+      }
+
+      this.putAlterarVideo({ VIDEOS: this.ADMIN_EDIT_OBJECT, VIDEOSPERFIL: perfis });
 
       for (let i = 0; i < this.Videos.Registros.length; i++) {
           if( this.Videos.Registros[i].UNV_ID_VIDEOS == this.ADMIN_EDIT_ID_VIDEO){
@@ -211,15 +242,65 @@ export class HomeComponent implements OnInit {
 
   }
 
+
+  sairEdit(){
+    this.ADMIN_EDIT_URL_HASH_VIDEO = '';
+    this.ADMIN_EDIT_TITULO_VIDEO = '';
+    this.ADMIN_EDIT_TEXTO_VIDEO = '';
+    this.ADMIN_EDIT_ID_VIDEO = 0;
+    this.ADMIN_EDIT_TAG_NAME = '';
+    this.ADMIN_EDIT_TAG_ID = 0;
+    this.ADMIN_EDIT_OBJECT = {
+        "UNV_ID_VIDEOS": 0,
+        "UNV_TX_TITULO": '',
+        "UNV_TX_DESCRICAO": '',
+        "UNV_NR_VIEW": 0,
+        "UNV_NR_LIKE": 0,
+        "UNV_DT_DATA": '',
+        "UNT_ID_TAG": 0,
+        "UNV_TX_HASH": '',
+        "UNT_TAG": {
+          "UNT_ID_TAG": 0,
+          "UNT_TX_NOME": '',
+          "TB_UNIVERSIDADE_VIDEOS": []
+        }
+      };
+    this.ADMIN_EDIT_PERFIS = [];
+  }
+
   salvar(){
+    this.load = true;
+    this.loginService.ValidateToken();
+
     this.pasteHash = '';
 
-    if(this.ADMIN_NEW_TAG_ID != 0){
+    if( this.ADMIN_NEW_PERFIS.length == 0)
+    {
+      this.selectClassConditionNewPerfil = true;
+      this.load = false;
+    }
+    else
+      this.selectClassConditionNewPerfil = false;
+
+    if( this.ADMIN_NEW_TAG_ID != 0 )
+    {
+      this.selectClassConditionNewTag = false;
+      this.load = false;
+    }
+    else
+      this.selectClassConditionNewTag = true;
+
+    if(this.ADMIN_NEW_TAG_ID != 0 && this.ADMIN_NEW_PERFIS.length != 0){
       this.selectClassConditionNewTag = false;
       this.isPasting = false;
       this.load = true;
       this.pasteHash = '';
 
+      let perfis: any = [];
+      for (let i = 0; i < this.Perfis.Registros.length; i++) {
+        if(this.ADMIN_NEW_PERFIS.indexOf(this.Perfis.Registros[i].UNP_ID_PERFIL) != -1)
+          perfis.push( { UNV_ID_VIDEOS: -1, UNP_ID_PERFIL: this.Perfis.Registros[i].UNP_ID_PERFIL } );
+      }
       let VideoObject: any = {
         UNV_ID_VIDEOS: -1,
         UNV_TX_TITULO: this.ADMIN_NEW_TITULO_VIDEO,
@@ -231,20 +312,28 @@ export class HomeComponent implements OnInit {
         UNV_TX_HASH: this.ADMIN_NEW_HASH_VIDEO
       };
 
-      //if( this.Videos.Registros != null)
-        //this.ADMIN_NEW_OBJECT = this.Videos.Registros[0];
-
         this.ADMIN_NEW_OBJECT.UNV_TX_TITULO = this.ADMIN_NEW_TITULO_VIDEO;
         this.ADMIN_NEW_OBJECT.UNV_TX_DESCRICAO = this.ADMIN_NEW_TEXTO_VIDEO;
         this.ADMIN_NEW_OBJECT.UNV_TX_HASH = this.ADMIN_NEW_HASH_VIDEO;
 
-        this.postAdicionaVideo(VideoObject);
+        this.postAdicionaVideo({ VIDEOS: VideoObject, VIDEOSPERFIL: perfis });
     }
     else
     {
       this.selectClassConditionNewTag = true;
-      this.ADMIN_NEW_TAG_ID = 0;
+      this.load = false;
+      //this.ADMIN_NEW_TAG_ID = 0;
     }
+
+    if( this.ADMIN_NEW_PERFIS.length == 0)
+      this.selectClassConditionNewPerfil = true;
+    else
+      this.selectClassConditionNewPerfil = false;
+
+    if( this.ADMIN_NEW_TAG_ID != 0 )
+      this.selectClassConditionNewTag = false;
+    else
+      this.selectClassConditionNewTag = true;
   }
 
   closeModalNew(){
@@ -272,7 +361,9 @@ export class HomeComponent implements OnInit {
     this.homeService.ListaTagsMenu()
                       .subscribe(
                           retorno => {
+                            this.resultadoConsulta = false;
                             this.Tags = retorno;
+                            this.loginService.Validate(retorno.Token);
                             if(this.Tags.Registros != null)
                               this.load = false;
                             else
@@ -282,14 +373,57 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+    //console.log(this.resultadoConsulta);
   }
+
+  getAdmin(){
+      this.homeService.ListaAdmin()
+                        .subscribe(
+                            retorno => {
+                              //this.resultadoConsulta = false;
+                              //this.loginService.Validate(retorno.Token);
+                              if(retorno.Registros != null)
+                                this.Admin = retorno.Registros[0];
+                              else
+                                this.Admin = false;
+                              this.load = false;
+                            },
+                            err => {
+                                console.log(err);
+                                this.Admin = false;
+                                this.load = false;
+                            });
+                            //console.log(this.resultadoConsulta);
+    }
+
+  getPerfis(){
+      this.homeService.ListaPerfis()
+                        .subscribe(
+                            retorno => {
+                              //this.resultadoConsulta = false;
+                              this.Perfis = retorno;
+                              this.loginService.Validate(retorno.Token);
+                              if(this.Tags.Registros != null)
+                                this.load = false;
+                              else
+                                this.load = false;
+                            },
+                            err => {
+                                console.log(err);
+                                this.load = false;
+                            });
+                            //console.log(this.resultadoConsulta);
+    }
 
   getVideos(pg){
     this.homeService.ListaVideos(pg)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                               this.resultadoConsulta = true;
+                            else if(retorno.Registros.length == 0)
+                                this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -303,14 +437,18 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getAdminVideos(pg){
     this.homeService.ListaVideos(pg)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                               this.resultadoConsulta = true;
+                            else if(retorno.Registros.length == 0)
+                                this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -324,14 +462,18 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getVideosMaisVistos(pg){
     this.homeService.ListaVideosMaisVistos(pg)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                               this.resultadoConsulta = true;
+                            else if(retorno.Registros.length == 0)
+                                this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -345,14 +487,18 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getVideosMaisRecentes(pg){
     this.homeService.ListaVideosMaisRecentes(pg)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                               this.resultadoConsulta = true;
+                            else if(retorno.Registros.length == 0)
+                                this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -366,14 +512,18 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getVideosTags(pg, querystring){
     this.homeService.ListaVideosTags(pg, querystring)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                               this.resultadoConsulta = true;
+                            else if(retorno.Registros.length == 0)
+                                this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -389,17 +539,21 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getPesquisa(pg, querystring){
     this.homeService.ListaBuscaVideos(pg, querystring)
                       .subscribe(
                           retorno => {
-                            if(retorno.Registros[0] == undefined)
+                            this.loginService.Validate(retorno.Token);
+                            if(retorno.Registros == null)
                             {
-                              this.VideosBusca = new Retorno(Object[0],0,0,0);
+                              this.VideosBusca = new Retorno(Object[0],0,0,0, false);
                               this.resultadoConsulta = true;
                             }
+                            else if(retorno.Registros.length == 0)
+                              this.resultadoConsulta = true;
                             else
                               this.resultadoConsulta = false;
 
@@ -415,14 +569,15 @@ export class HomeComponent implements OnInit {
                               console.log(err);
                               this.load = false;
                           });
+                          //console.log(this.resultadoConsulta);
   }
 
   getYoutubeDadosVideo(hashVideo){
     this.homeService.YoutubeBuscarDadosVideo(hashVideo)
                       .subscribe(
-                          data => {
-                            var videos = <any>data;
-                            if(videos.items[0] != undefined)
+                          retorno => {
+                            var videos = <any>retorno;
+                            if(videos.items.length != 0)
                             {
                               this.load = false;
                               this.isPasting = true;
@@ -445,12 +600,21 @@ export class HomeComponent implements OnInit {
                           });
   }
 
-  putAlterarVideo(){
+  putAlterarVideo(objectVideo){
       let returnOperation: Response;
 
-      this.homeService.AtualizaVideo(this.ADMIN_EDIT_OBJECT).subscribe(
+      this.homeService.AtualizaVideo(objectVideo).subscribe(
           retorno => {
                         returnOperation = retorno;
+
+                        let perfis: any = [];
+                        for (let i = 0; i < this.Perfis.Registros.length; i++) {
+                          if(this.ADMIN_EDIT_PERFIS.indexOf(this.Perfis.Registros[i].UNP_ID_PERFIL) != -1)
+                            perfis.push( this.Perfis.Registros[i].UNP_ID_PERFIL );
+                        }
+
+                        this.ADMIN_EDIT_OBJECT.PERFIS = perfis;
+
                         this.load = false;
                         this.msgSucesso = true;
                         setTimeout(() => {
@@ -475,7 +639,6 @@ export class HomeComponent implements OnInit {
                   setTimeout(() => {
                     this.msgSucesso = false;
                   }, this.msgTimeout);
-                 /*console.log(retorno)*/
                },
         err => {
                   console.log(err);
@@ -494,12 +657,15 @@ export class HomeComponent implements OnInit {
         retorno => {
                     returnOperation = retorno;
                     this.load = false;
-                    //console.log(retorno);
                     this.ADMIN_NEW_ID_VIDEO = retorno;
                     this.ADMIN_NEW_OBJECT.UNV_ID_VIDEOS = retorno;
                     this.ADMIN_NEW_OBJECT.UNT_ID_TAG = this.ADMIN_NEW_TAG_ID;
                     this.ADMIN_NEW_OBJECT.UNT_TAG = this.getTagObject(this.ADMIN_NEW_TAG_ID);
-                    this.Videos.Registros.push(this.ADMIN_NEW_OBJECT);
+                    this.ADMIN_NEW_OBJECT.PERFIS = this.ADMIN_NEW_PERFIS;
+                    this.Videos.Registros.unshift(this.ADMIN_NEW_OBJECT);
+
+                    //console.log(this.Videos.Registros[0]);
+                    //console.log(this.ADMIN_NEW_OBJECT);
 
                     this.ADMIN_NEW_TAG_ID = 0;
 
@@ -563,7 +729,7 @@ export class HomeComponent implements OnInit {
 
     let returnOperation: Response;
 
-    this.homeService.AtualizaViewVideo({ UNV_ID_VIDEOS: event.ID }).subscribe(
+    this.homeService.AtualizaViewVideo({ VIDEOS : { UNV_ID_VIDEOS: event.ID }}).subscribe(
         retorno => { returnOperation = retorno /*console.log(retorno)*/ },
         err => { console.log(err) });
 
@@ -575,6 +741,7 @@ export class HomeComponent implements OnInit {
   }
 
   onVideoAdminEditSelected(event){
+    this.selectClassConditionEditPerfil = false;
     let url:string = this.protocol + '//i.ytimg.com/vi/' + event.HASH + '/hqdefault.jpg';
     this.ADMIN_EDIT_URL_HASH_VIDEO = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.ADMIN_EDIT_TITULO_VIDEO = event.TITULO;
@@ -583,6 +750,9 @@ export class HomeComponent implements OnInit {
     this.ADMIN_EDIT_TAG_NAME = event.NAME_TAG;
     this.ADMIN_EDIT_TAG_ID = event.ID_TAG
     this.ADMIN_EDIT_OBJECT = event.OBJECT;
+    for (let i = 0; i < event.OBJECT.PERFIS.length; i++) {
+        this.ADMIN_EDIT_PERFIS.push( event.OBJECT.PERFIS[i] );
+    }
   }
 
   onChangeEditTag(event) {
@@ -602,11 +772,12 @@ export class HomeComponent implements OnInit {
   }
 
   onTagSelected(event){
+    this.resultadoConsulta = false;
     this.onSelectedTag({IdTag: event.ID, NameTag: event.NAME});
   }
 
   onSelectTab(tabName){
-
+    this.resultadoConsulta = false;
     tabName != 'find' ? this.busca = '': this.tagSelectedName = 'Pesquisa';
     tabName != 'admVideo' ? this.admVideoSelectVisible = false : this.admVideoSelectVisible = true;
     tabName != 'admTag' ? this.admTagSelectVisible = false : this.admTagSelectVisible = true;
@@ -702,5 +873,92 @@ export class HomeComponent implements OnInit {
     this.ADMIN_NEW_TAG_ID = 0;
     this.getYoutubeDadosVideo(hashVideo);
     this.load = true;
+  }
+
+  onSelectPerfil(IDPERFIL){
+    if(this.ADMIN_NEW_PERFIS.indexOf(IDPERFIL)!= -1)
+      this.ADMIN_NEW_PERFIS.splice(this.ADMIN_NEW_PERFIS.indexOf(IDPERFIL), 1);
+    else
+      this.ADMIN_NEW_PERFIS.push(IDPERFIL);
+
+      if( this.ADMIN_NEW_PERFIS.length == 0)
+        this.selectClassConditionNewPerfil = true;
+      else
+        this.selectClassConditionNewPerfil = false;
+  }
+
+  onCheckPerfil(IDPERFIL){
+    if(this.ADMIN_NEW_PERFIS.indexOf(IDPERFIL) != -1)
+      return true;
+    else
+      return false;
+  }
+
+  onCheckPerfilEdit(IDPERFIL){
+    if(this.ADMIN_EDIT_PERFIS.indexOf(IDPERFIL) != -1)
+      return true;
+    else
+      return false;
+  }
+
+  onSelectPerfilEdit(IDPERFIL){
+    if(this.ADMIN_EDIT_PERFIS.indexOf(IDPERFIL)!= -1)
+      this.ADMIN_EDIT_PERFIS.splice(this.ADMIN_EDIT_PERFIS.indexOf(IDPERFIL), 1);
+    else
+      this.ADMIN_EDIT_PERFIS.push(IDPERFIL);
+
+      if( this.ADMIN_EDIT_PERFIS.length == 0)
+        this.selectClassConditionEditPerfil = true;
+      else
+        this.selectClassConditionEditPerfil = false;
+  }
+
+
+  onSelectPerfilEditTodos()
+  {
+    this.ADMIN_EDIT_PERFIS = [];
+    for (let i = 0; i < this.Perfis.Registros.length; i++) {
+        this.ADMIN_EDIT_PERFIS.push(this.Perfis.Registros[i].UNP_ID_PERFIL);
+    }
+
+    if( this.ADMIN_EDIT_PERFIS.length == 0)
+      this.selectClassConditionEditPerfil = true;
+    else
+      this.selectClassConditionEditPerfil = false;
+  }
+
+
+  onSelectPerfilEditLimpar()
+  {
+    this.ADMIN_EDIT_PERFIS = [];
+
+    if( this.ADMIN_EDIT_PERFIS.length == 0)
+      this.selectClassConditionEditPerfil = true;
+    else
+      this.selectClassConditionEditPerfil = false;
+  }
+
+  onSelectPerfilTodos()
+  {
+    this.ADMIN_NEW_PERFIS = [];
+    for (let i = 0; i < this.Perfis.Registros.length; i++) {
+        this.ADMIN_NEW_PERFIS.push(this.Perfis.Registros[i].UNP_ID_PERFIL);
+    }
+
+    if( this.ADMIN_NEW_PERFIS.length == 0)
+      this.selectClassConditionNewPerfil = true;
+    else
+      this.selectClassConditionNewPerfil = false;
+  }
+
+
+  onSelectPerfilLimpar()
+  {
+    this.ADMIN_NEW_PERFIS = [];
+
+    if( this.ADMIN_NEW_PERFIS.length == 0)
+      this.selectClassConditionNewPerfil = true;
+    else
+      this.selectClassConditionNewPerfil = false;
   }
 }

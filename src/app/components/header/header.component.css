@@ -1,3 +1,17 @@
+.dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .3em;
+    vertical-align: middle;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-left: .3em solid transparent;
+    float: right;
+    margin-top: 9px;
+}
+
 .navbar-default {
     background-color: #f8f8f8;
     border-color: #e7e7e7;

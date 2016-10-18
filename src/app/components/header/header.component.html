@@ -12,15 +12,20 @@
 
         <div class="col-lg-4">
           <div class="btn-group" style=" margin-top: 20px; float: right;">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button"
+                    class="btn btn-secondary dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    style="width: 300px; overflow: hidden; text-align: Left; white-space: inherit;">
               {{userName}}
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-              <strong style="width: 112px; margin: auto; display: block;">Administração</strong>
-              <div class="dropdown-divider"></div>
-              <button class="dropdown-item" (click)="open('admVideo')" type="button">Vídeos</button>
+              <strong *ngIf="adminHide" style="width: 112px; margin: auto; display: block;">Administração</strong>
+              <div *ngIf="adminHide" class="dropdown-divider"></div>
+              <button  *ngIf="adminHide"  class="dropdown-item" (click)="open('admVideo')" type="button">Vídeos</button>
               <!--button class="dropdown-item" (click)="open('admTag')"type="button">Tags</button-->
-              <div class="dropdown-divider"></div>
+              <div *ngIf="adminHide" class="dropdown-divider"></div>
               <button class="dropdown-item" (click)="eventSair()" type="button">Sair</button>
             </div>
           </div>

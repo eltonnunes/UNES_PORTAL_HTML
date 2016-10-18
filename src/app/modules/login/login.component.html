@@ -24,15 +24,20 @@
             <div class="row">
 
               <div *ngIf="errorLogin" class="col-xs-12">
-                <div class="alert alert-danger" role="alert">
+
+                <div *ngIf="!loginSemAcesso" class="alert alert-danger" role="alert">
                   <strong>Ops!</strong> Não foi possível autenticar no servidor.
                 </div>
-              </div>
 
+                <div *ngIf="loginSemAcesso" class="alert alert-danger" role="alert">
+                  <strong>Ops!</strong> Você não tem permissão para usar este sistema.
+                </div>
+
+              </div>
 
               <div class="col-xs-12">
                 <label>Usuário</label>
-                <input [(ngModel)]="usuario" name="usuario" type="text" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
+                <input (keypress)="eventHandlerKeyPressAutenticar($event)" [(ngModel)]="usuario" name="usuario" type="text" class="{{classCondition ? 'form-control': 'form-controlErro'}}" placeholder=""
                   required pattern="\S+">
               </div>
               <div class="col-xs-12">
@@ -56,16 +61,32 @@
                 </div>
               </div>
 
+              <div *ngIf="conditionEmail" class="col-xs-12">
+                <div class="alert alert-danger" role="alert">
+                  <strong>Ops!</strong> Você não possui e-mail cadastrado.
+                </div>
+              </div>
+
               <div *ngIf="classConditionAlteraSenha"  class="{{classConditionCnpjCpf ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
                 <label class="col-form-label" for="inputDanger1">CPF/CNPJ do Associado</label>
-                <input #inputcpfcnpj [(ngModel)]="cpfcnpj" (keyup)="cnpfCnpjKeyup()" name="cpfcnpj" type="text" class="{{classConditionCnpjCpf ? 'form-control': 'form-control form-control-danger'}}" required pattern="\S+">
+                <input #inputcpfcnpj [(ngModel)]="cpfcnpj"
+                       (keyup)="cnpfCnpjKeyup()"
+                       name="cpfcnpj" type="text"
+                       class="{{classConditionCnpjCpf ? 'form-control': 'form-control form-control-danger'}}"
+                       required pattern="\S+"
+                       (keypress)="eventHandlerKeyPressSolicitarSenha($event)">
                 <div *ngIf="!validaConditionCnpjCpf" class="form-control-feedback">CPF / CNPJ informado inválido.</div>
                 <div *ngIf="!conditionCnpjCpf" class="form-control-feedback">CPF / CNPJ não encontrado em nosso sistema.</div>
               </div>
 
               <div *ngIf="classConditionAlteraSenha"  class="{{classConditionCodigo ? 'col-xs-12 form-group': 'col-xs-12 form-group has-danger'}}">
                 <label>Código do Associado</label>
-                <input type="text" [(ngModel)]="codigo" name="codigo" (keyup)="codigoKeyup()" class="{{classCondition ? 'form-control': 'form-controlErro'}}">
+                <input type="text"
+                        [(ngModel)]="codigo"
+                        name="codigo"
+                        (keyup)="codigoKeyup()"
+                        class="{{classCondition ? 'form-control': 'form-controlErro'}}"
+                        (keypress)="eventHandlerKeyPressSolicitarSenha($event)">
                 <div *ngIf="!validaConditionCodigo" class="form-control-feedback">Código não encontrado em nosso sistema.</div>
               </div>
 
@@ -78,9 +99,9 @@
               </div>
 
               <div class="modal-footer">
-                <button *ngIf="classConditionAlteraSenha" type="button" (click)="SolicitarSenha()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
+                <button  *ngIf="classConditionAlteraSenha" type="button" (click)="SolicitarSenha()" class="{{classCondition ? 'btn btn-success': 'btn btn-danger'}}"
                   style="cursor:pointer; margin-top: 10px;">Solicitar nova senha</button>
-                <button *ngIf="!conditionAlteraSenha" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
+                <button  *ngIf="!conditionAlteraSenha" type="button" class="btn btn-secondary" style="cursor: progress;"> <i class='fa fa-spinner fa-spin '></i> Aguarde... </button>
               </div>
 
             </div>
@@ -102,6 +123,11 @@
               <strong>Ops!</strong> Não foi possível efetuar a solicitação ao servidor.
             </div>
           </div>
+
+
+
+
+
 
           <div class="medium-12 columns">
             <h5 class="ligamos"><img src="img/icon-callback.svg" width="50px;" style="text-align: left !important;"> Ligamos para você</h5>

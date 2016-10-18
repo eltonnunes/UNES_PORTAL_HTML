@@ -47,8 +47,8 @@ export class FormLoginComponent implements OnInit {
 
                             localStorage.setItem('auth_token', this.retorno.Registros[0].UTA_TX_TOKEN);
                             localStorage.setItem('auth_validate', this.retorno.Registros[0].UTA_DT_VALIDADE);
-                            sessionStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
-                            sessionStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
+                            localStorage.setItem('nome', this.retorno.Registros[0].PES_PESSOA.PES_TX_NOME);
+                            localStorage.setItem('email', this.retorno.Registros[0].PES_PESSOA.PES_TX_EMAIL);
 
                             this.login = true;
                             this.loggedIn = true;
@@ -65,9 +65,9 @@ export class FormLoginComponent implements OnInit {
 
   Logout() {
         localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear();
         this.loggedIn = false;
-        //sessionStorage.setItem('loggedIn', 'false');
+        //localStorage.setItem('loggedIn', 'false');
         //this.router.navigate(['/login']);
   };
 
